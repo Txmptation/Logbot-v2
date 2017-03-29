@@ -1,0 +1,21 @@
+{
+  "name": "logbot-v2",
+  "version": "1.0.0",
+  "description": "Updated version of the discord bot, LogBot!",
+  "main": "bot.js",
+  "scripts": {
+    "start": "nodemon src/bot.js"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "XeliteXirish",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.0.0",
+    "mysql": "^2.13.0",
+    "nodemon": "^1.11.0",
+    "got": "latest"
+  }
+}
