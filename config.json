@@ -1,0 +1,11 @@
+{
+  "botToken": "",
+  "prefix": "/lb",
+  "maintainer_id": [
+    "182210823630880768"
+  ],
+  "sql_host": "178.62.9.141",
+  "sql_user": "logbotv2",
+  "sql_db": "zadmin_logbotv2",
+  "sql_pass": "azere4era"
+}
