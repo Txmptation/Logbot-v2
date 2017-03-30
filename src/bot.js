@@ -4,10 +4,10 @@ const mysql = require('mysql');
 const fs = require('fs');
 
 const client = exports.client = new Discord.Client();
-const config = exports.config = require('./config.json');
+const config = exports.config = client.config = require('./../config.json');
 const utils = require('./utils');
 
-const commands = exports.commands = {};
+const commands = exports.commands = client.commands = {};
 
 let connection = exports.db = mysql.createConnection({
     host: config.sql_host,

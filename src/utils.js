@@ -1,8 +1,9 @@
-const fs = require('fs');
+const bot = require('./bot');
+const RichEmbed = require('discord.js').RichEmbed;
 
+const fs = require('fs');
 const got = require('got');
 const url = require('url');
-const bot = require('./bot');
 
 const blacklist = exports.blackList = [];
 const vipList = exports.vipList = [];

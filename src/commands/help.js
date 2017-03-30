@@ -6,18 +6,22 @@ exports.info = {
     description: 'Shows you help for all commands or just a single command'
 };
 
+const getHelp = function (bot, command) {
+    return {
+        name: `\`${command.info.name}\``,
+        value: `Usage: \`${bot.config.prefix}${command.info.usage}\`\nDescription: ${command.info.description}`
+    };
+};
+
 exports.run = function (bot, msg, args) {
     if (args.length < 1) {
 
-        var fields = [];
+        const embed = utils.getSimpleEmbed("Help", "All available commands for logbot", utils.getColour('red'));
+
         for (const cmd in bot.commands) {
-            fields.push(getHelp(bot, bot.commands[cmd]));
+            embed.addField(getHelp(bot, bot.commands[cmd]).name, getHelp(bot, bot.commands[cmd]).value);
         }
 
-        const embed = utils.getSimpleEmbed("Help", "All available commands for logbot", utils.getColour('red'));
-        fields.forEach(field => {
-            embed.addField(field);
-        });
         msg.channel.sendEmbed(embed);
 
         return;
@@ -29,11 +33,4 @@ exports.run = function (bot, msg, args) {
     } else {
         msg.channel.sendEmbed(utils.getSimpleEmbed('Help: ' + args[0], 'Logbot help!', utils.getColour('red')).addField(getHelp(bot, args[0])));
     }
-};
-
-const getHelp = function (bot, command) {
-    return {
-        name: `\`${command.info.name}\``,
-        value: `Usage: \`${bot.config.prefix}${command.info.usage}\`\nDescription: ${command.info.description}`
-    };
 };
