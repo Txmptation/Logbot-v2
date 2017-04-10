@@ -50,11 +50,6 @@ process.on('uncaughtException', (err) => {
     console.error("Uncaught Exception" + errorMsg);
 });
 
-process.on('ExceptionTypeError', (err) => {
-    let errorMsg = err.stack.replace(new RegExp(`${__dirname}\/`, 'g'), './');
-    console.error("Uncaught Exception" + errorMsg);
-});
-
 function loadCommands() {
     fs.readdirSync(__dirname + '/commands/').forEach(file => {
         if (file.startsWith('_') || !file.endsWith('.js')) return;

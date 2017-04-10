@@ -2,6 +2,7 @@ const bot = require('./bot');
 const RichEmbed = require('discord.js').RichEmbed;
 
 const fs = require('fs');
+const requestify = require('requestify');
 const got = require('got');
 const url = require('url');
 
@@ -74,16 +75,19 @@ exports.createListTable = function () {
  * Logs a message to the specific guild table
  * @param message
  */
-exports.logMessage = function (message) {
+exports.logMessage = async function (message) {
 
-    exports.createTable(message.guild).then(() => {
-        let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, Vip) VALUES (${bot.db.escape(message.guild.name)}, ${message.channel.id}, ${bot.db.escape(message.channel.name)}, ${message.author.id}, ${bot.db.escape(message.author.username)}, ${bot.db.escape(exports.cleanMessage(message))}, ${exports.isUserVip(message)})`
+    let tableExists = await exports.doesTableExist(message.guild);
+    if (tableExists) {
+        let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message) VALUES (${bot.db.escape(message.guild.name)}, ${message.channel.id}, ${bot.db.escape(message.channel.name)}, ${message.author.id}, ${bot.db.escape(message.author.username)}, ${bot.db.escape(exports.cleanMessage(message))})`
         bot.db.query(query, function (err, rows, fields) {
             if (err) {
                 console.error(`Error trying to submit message, Error: ${err.stack}`);
             }
         })
-    })
+    } else {
+        await exports.createTable(message.guild);
+    }
 };
 
 exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal) {
@@ -91,7 +95,7 @@ exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal)
     return new Promise((resolve, reject) => {
 
         if (!isGlobal) {
-            let query = `SELECT Message FROM id_${guild.id} WHERE AuthorID = ${user.id}`;
+            let query = `SELECT ChannelName, AuthorName, AuthorID, Message FROM id_${guild.id} WHERE AuthorID = ${user.id}`;
             if (isLimit) query += ` LIMIT ${searchCount}`;
 
             bot.db.query(query, function (err, rows, fields) {
@@ -100,14 +104,20 @@ exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal)
                     reject(err);
                     return;
                 }
-console.log('OUTPUT MESSAGES' + rows);
-                resolve(rows);
+
+                let results = [];
+                for (let x = 0; x < rows.length; x++) {
+                    let string = `${rows[x].ChannelName} | ${rows[x].AuthorName} (${rows[x].AuthorID}) - ${rows[x].Message}`;
+                    results.push(string);
+                }
+
+                resolve(results);
             })
-        }else {
+        } else {
 
             exports.getAllGuildTables().then(tables => {
                 tables.forEach(table => {
-                    let query = `SELECT Message FROM id_${table.id} WHERE AuthorID = ${user.id}`;
+                    let query = `SELECT ChannelName, AuthorName, AuthorID, Message FROM id_${table.id} WHERE AuthorID = ${user.id}`;
                     bot.db.query(query, function (err, rows, fields) {
                         if (err) {
                             console.error(`An error occurred when reading messages, Error: ${err.stack}`);
@@ -115,7 +125,13 @@ console.log('OUTPUT MESSAGES' + rows);
                             return;
                         }
 
-                        resolve(rows);
+                        let results = [];
+                        for (let x = 0; x < rows.length; x++) {
+                            let string = `${rows[x].ChannelName} | ${rows[x].AuthorName} (${rows[x].AuthorID}) - ${rows[x].Message}`;
+                            results.push(string);
+                        }
+
+                        resolve(results);
                     })
                 })
             })
@@ -124,25 +140,21 @@ console.log('OUTPUT MESSAGES' + rows);
 
 };
 
-exports.uploadToHaste = function (messages) {
+exports.uploadToHaste = async function (messages) {
 
-    return new Promise((resolve, reject) => {
-        got.post(url.resolve('https://hastebin.com', 'documents'), {
-            body: JSON.stringify(messages),
-            json: true,
-            headers: {
-                'Content-Type': 'text/plain'
-            }
-        }).then(res => {
-            if (!res.body || !res.body.key) {
-                console.error('Error occurred when uploading to haste!');
-                reject();
-                return;
-            }
-            let key = res.body.key || res.body;
-            resolve(key);
-        })
-    });
+    try {
+
+        let response = await requestify.post(url.resolve('https://hastebin.com', 'documents'), {
+            "Messages": messages
+        });
+
+        let res = JSON.parse(response.body);
+        return res.key || res;
+
+    } catch (err) {
+        console.error(`Failed to upload: ${err.stack}`);
+    }
+
 };
 
 exports.cleanMessage = function (message) {
@@ -188,7 +200,7 @@ exports.getAllGuildTables = function () {
 
         let query = `select table_name from information_schema.tables`;
         bot.db.query(query, function (err, rows, fields) {
-            if (err){
+            if (err) {
                 console.error(`Error while getting tables, Error: ${err.stack}`);
                 reject(err);
                 return;
