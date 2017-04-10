@@ -14,8 +14,9 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.0.0",
+    "got": "latest",
     "mysql": "^2.13.0",
     "nodemon": "^1.11.0",
-    "got": "latest"
+    "requestify": "^0.2.5"
   }
 }

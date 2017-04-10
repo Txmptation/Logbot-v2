@@ -20,7 +20,7 @@ client.on('ready', () => {
     console.log(`Logbot v2: Connected to ${client.guilds.size} servers, for a total of ${client.channels.size} channels and ${client.users.size} users!`);
 
     try {
-        utils.createListTable();
+        //utils.createListTable();  TODO do this at a later date
     }catch (err){console.error(err.stack)}
 
     loadCommands();
@@ -31,6 +31,8 @@ client.on('message', msg => {
     const args = msg.content.split(' ').splice(1);
 
     utils.logMessage(msg);
+
+    if (msg.author.id !== client.user.id) return;
 
     if (commands[command]){
         try {
@@ -44,6 +46,11 @@ client.on('message', msg => {
 client.login(config.botToken);
 
 process.on('uncaughtException', (err) => {
+    let errorMsg = err.stack.replace(new RegExp(`${__dirname}\/`, 'g'), './');
+    console.error("Uncaught Exception" + errorMsg);
+});
+
+process.on('ExceptionTypeError', (err) => {
     let errorMsg = err.stack.replace(new RegExp(`${__dirname}\/`, 'g'), './');
     console.error("Uncaught Exception" + errorMsg);
 });

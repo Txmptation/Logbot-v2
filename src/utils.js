@@ -5,9 +5,11 @@ const fs = require('fs');
 const got = require('got');
 const url = require('url');
 
-const blacklist = exports.blackList = [];
-const vipList = exports.vipList = [];
-
+/**
+ * Creates the log table for each guild
+ * @param guild
+ * @returns {Promise}
+ */
 exports.createTable = function (guild) {
 
     return new Promise((resolve, reject) => {
@@ -54,9 +56,8 @@ exports.createListTable = function () {
     Username TEXT,
     Blacklist TINYINT,
     VipList TINYINT
-);`
+);`;
 
-        console.log(query);
         bot.db.query(query, function (err, rows, fields) {
             if (err) {
                 console.error(`Error trying to create database, Error ${err.stack}`);
@@ -67,45 +68,89 @@ exports.createListTable = function () {
             resolve();
         })
     })
-}
+};
 
+/**
+ * Logs a message to the specific guild table
+ * @param message
+ */
 exports.logMessage = function (message) {
 
     exports.createTable(message.guild).then(() => {
         let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, Vip) VALUES (${bot.db.escape(message.guild.name)}, ${message.channel.id}, ${bot.db.escape(message.channel.name)}, ${message.author.id}, ${bot.db.escape(message.author.username)}, ${bot.db.escape(exports.cleanMessage(message))}, ${exports.isUserVip(message)})`
         bot.db.query(query, function (err, rows, fields) {
-            if (err){
+            if (err) {
                 console.error(`Error trying to submit message, Error: ${err.stack}`);
             }
         })
     })
 };
 
-exports.uploadToHaste = function (messages) {
+exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal) {
 
-    got.post(url.resolve('https://hastebin.com', 'documents'), {
-        body: messages,
-        json: true,
-        headers: {
-            'Content-Type': 'text/plain'
-        }
-    }).then(res => {
-        if (!res.body || !res.body.key){
-            console.error('Error occured when uploading to haste!');
-            return;
-        }
-        let key = res.body.key || res.body;
+    return new Promise((resolve, reject) => {
 
+        if (!isGlobal) {
+            let query = `SELECT Message FROM id_${guild.id} WHERE AuthorID = ${user.id}`;
+            if (isLimit) query += ` LIMIT ${searchCount}`;
+
+            bot.db.query(query, function (err, rows, fields) {
+                if (err) {
+                    console.error(`An error occurred when reading messages, Error: ${err.stack}`);
+                    reject(err);
+                    return;
+                }
+console.log('OUTPUT MESSAGES' + rows);
+                resolve(rows);
+            })
+        }else {
+
+            exports.getAllGuildTables().then(tables => {
+                tables.forEach(table => {
+                    let query = `SELECT Message FROM id_${table.id} WHERE AuthorID = ${user.id}`;
+                    bot.db.query(query, function (err, rows, fields) {
+                        if (err) {
+                            console.error(`An error occurred when reading messages, Error: ${err.stack}`);
+                            reject(err);
+                            return;
+                        }
+
+                        resolve(rows);
+                    })
+                })
+            })
+        }
     })
 
-}
+};
+
+exports.uploadToHaste = function (messages) {
+
+    return new Promise((resolve, reject) => {
+        got.post(url.resolve('https://hastebin.com', 'documents'), {
+            body: JSON.stringify(messages),
+            json: true,
+            headers: {
+                'Content-Type': 'text/plain'
+            }
+        }).then(res => {
+            if (!res.body || !res.body.key) {
+                console.error('Error occurred when uploading to haste!');
+                reject();
+                return;
+            }
+            let key = res.body.key || res.body;
+            resolve(key);
+        })
+    });
+};
 
 exports.cleanMessage = function (message) {
 
     let cleanMsg = message.content;
 
     message.mentions.users.array().forEach(mention => {
-      cleanMsg.replace(`<${mention.id}>`, mention.username);
+        cleanMsg.replaceAll(`<${mention.id}>`, mention.username);
     });
 
     return cleanMsg;
@@ -113,10 +158,6 @@ exports.cleanMessage = function (message) {
 
 exports.getName = function (guild) {
     return guild.name.replaceAll(' ', '_');
-};
-
-exports.isUserVip = function (message) {
-    return vipList.indexOf(message.author.id) > -1;
 };
 
 exports.doesTableExist = function (guild) {
@@ -128,13 +169,13 @@ exports.doesTableExist = function (guild) {
         bot.db.query(`select table_name from information_schema.tables where table_name = '${tableName}';`, function (err, rows, fields) {
             try {
 
-                if (rows.length > 0){
+                if (rows.length > 0) {
                     resolve(true);
-                }else {
+                } else {
                     resolve(false);
                 }
 
-            }catch (err){
+            } catch (err) {
                 console.error(`Error checking if table exists, Error: ${err.stack}`);
                 reject(err);
             }
@@ -142,49 +183,33 @@ exports.doesTableExist = function (guild) {
     })
 };
 
-exports.addToBlacklist = function (message) {
-    exports.isUserInDb(message).then(inDatabase =>{
-        if (!inDatabase){
-            bot.db.query(`INSET INTO BotLists (ServerId, ServerName, UserId, Username, Blacklist) VALUES (${bot.db.escape(message.guild.id)}, ${bot.db.escape(message.guild.name)}, ${bot.db.escape(message.author.id)}, ${bot.db.escape(message.author.username)}, ${1});`, function (err, rows, fields) {
-                if(err){
-                    console.error(`Error inserting into BotLists, Error: ${err.stack}`);
-                    return;
-                }
-            })
-        }else {
-
-        }
-    })
-};
-
-exports.addToWhitelist = function (author) {
-    vipList.push(author.id);
-};
-
-exports.isUserInDb = function (message) {
+exports.getAllGuildTables = function () {
     return new Promise((resolve, reject) => {
-        let query = `SELECT distinct 1 FROM BotLists WHERE BotLists.UserID = ${message.author.id};`;
+
+        let query = `select table_name from information_schema.tables`;
         bot.db.query(query, function (err, rows, fields) {
             if (err){
-                console.error(`Error executing database command, Error: ${err.stack}`);
+                console.error(`Error while getting tables, Error: ${err.stack}`);
                 reject(err);
                 return;
             }
-            if (rows.length > 0){
-                resolve(true);
-            }else {
-                resolve(false);
-            }
+
+            let results = [];
+            rows.forEach(table => {
+                if (table.startsWith('id_')) results.push(table);
+            });
+
+            resolve(results);
         })
     })
-}
+};
 
-exports.getSimpleEmbed = function(title, text, colour, isBad = false) {
+exports.getSimpleEmbed = function (title, text, colour, isBad = false) {
 
     let embedMsg = new RichEmbed()
         .setTitle(title)
-        .setAuthor("Staff Portal", bot.client.user.avatarURL)
-        .setColor(colour)
+        .setAuthor("Log Bot v2", bot.client.user.avatarURL)
+        .setColor(colour || exports.getRandomColor())
         .setURL(bot.config.host)
         .setDescription(text);
     if (isBad) embedMsg.setThumbnail("https://cdn2.iconfinder.com/data/icons/freecns-cumulus/32/519791-101_Warning-128.png");
@@ -203,12 +228,12 @@ exports.getColour = function (colourCode) {
     else if (colourCode.toLowerCase() == 'green') {
         return 0x14E01D;
     }
-    else if (colourCode.toLowerCase() == 'orange'){
-        return  0xFF8C00;
+    else if (colourCode.toLowerCase() == 'orange') {
+        return 0xFF8C00;
     }
-    else if (colourCode.toLowerCase() == 'yellow'){
-        return  0xFFFF00;
-    }else {
+    else if (colourCode.toLowerCase() == 'yellow') {
+        return 0xFFFF00;
+    } else {
         return exports.getRandomColor();
     }
 };
@@ -217,7 +242,7 @@ exports.getRandomColor = function () {
     return [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
 };
 
-String.prototype.replaceAll = function(search, replacement) {
+String.prototype.replaceAll = function (search, replacement) {
     let target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
