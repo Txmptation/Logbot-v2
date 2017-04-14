@@ -43,7 +43,7 @@ try {
 
 // Set up modules
 try {
-    //bot.connect();
+    bot.connect();
     auth(config, app, passport, DiscordS);
     read(app, config);
 

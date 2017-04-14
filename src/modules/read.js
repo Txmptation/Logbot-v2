@@ -31,11 +31,11 @@ module.exports = function (app, config) {
                         let removeMsg = false;
 
                         if (checkChannelId) {
-                            if (!validChannelId(req.query.channelid, msg.ChannelId, msg.channelID)) removeMsg = true;
+                            if (!validChannelId(req.query.channelid, msg.channelID)) removeMsg = true;
                         }
 
                         if (checkAuthorId) {
-                            if (!validAuthorId(req.query.authorid, msg.AuthorID)) removeMsg = true;
+                            if (!validAuthorId(req.query.authorid, msg.authorID)) removeMsg = true;
                         }
 
                         if (!removeMsg) results.push(msg);
@@ -53,11 +53,11 @@ module.exports = function (app, config) {
                         let removeMsg = false;
 
                         if (checkChannelId) {
-                            if (!validChannelId(req.query.channelid, msg.ChannelId, msg.channelID)) removeMsg = true;
+                            if (!validChannelId(req.query.channelid, msg.channelID)) removeMsg = true;
                         }
 
                         if (checkAuthorId) {
-                            if (!validAuthorId(req.query.authorid, msg.AuthorID)) removeMsg = true;
+                            if (!validAuthorId(req.query.authorid, msg.authorID)) removeMsg = true;
                         }
 
                         if (!removeMsg) results.push(msg);
@@ -93,6 +93,7 @@ function validChannelId(channelId, data) {
 }
 
 function validAuthorId(authorId, data) {
+    //console.log('CHECKING AUTHOR ID : ' + authorId + " vs " + data);
     return authorId === data;
 }
 
@@ -144,7 +145,7 @@ function getAllMessages() {
                 for (let x = 0; x < tables.length; x++) {
                     let table = tables[x];
 
-                    let query = `SELECT ChannelID, ChannelName, AuthorName, AuthorID, Message FROM ${table}`;
+                    let query = `SELECT ServerName, ChannelID, ChannelName, AuthorName, AuthorID, Message FROM ${table}`;
                     index.db.query(query, function (err, rows, fields) {
                         if (err) {
                             console.error(`An error occurred when reading messages, Error: ${err.stack}`);
@@ -155,10 +156,11 @@ function getAllMessages() {
                         for (let x = 0; x < rows.length; x++) {
                             let message = {
                                 serverId: table.split('id_')[1],
+                                serverName: rows[x].ServerName,
                                 channelID: rows[x].ChannelID,
                                 channelName: rows[x].ChannelName,
                                 authorName: rows[x].AuthorName,
-                                authorId: rows[x].AuthorID,
+                                authorID: rows[x].AuthorID,
                                 message: rows[x].Message
                             };
                             results.push(message);
