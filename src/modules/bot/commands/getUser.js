@@ -1,5 +1,5 @@
+const index = require('./../../../index');
 const utils = require('../utils');
-const config = require('./../../config.json');
 
 exports.info = {
     name: 'user',
@@ -20,7 +20,7 @@ exports.run = function (bot, msg, args) {
             }
         }
 
-        let searchMessages = config.default_message_search;
+        let searchMessages = index.config.default_message_search;
         if (typeof args[args.length - 2] == 'number') {
             searchMessages = args[args.length - 2];
         }
@@ -29,7 +29,7 @@ exports.run = function (bot, msg, args) {
 
     } else if (args.length == 2) {
 
-        let searchMessages = config.default_message_search;
+        let searchMessages = index.config.default_message_search;
         if (typeof args[args.length - 1] == 'number') {
             searchMessages = args[args.length - 1];
         }
@@ -38,18 +38,18 @@ exports.run = function (bot, msg, args) {
 
     } else if (args.length == 1) {
 
-        let searchMessages = config.default_message_search;
+        let searchMessages = index.config.default_message_search;
         runSearch(msg, searchMessages, false);
 
     } else {
-        msg.channel.sendEmbed(utils.getSimpleEmbed("Missing Parameters!", 'You need to at least include a user to search for!', utils.getColour('red'), true)).then(m => {m.delete(config.msg_delete_time)})
+        msg.channel.sendEmbed(utils.getSimpleEmbed("Missing Parameters!", 'You need to at least include a user to search for!', utils.getColour('red'), true)).then(m => {m.delete(index.config.msg_delete_time)})
     }
 };
 
 function runSearch(msg, searchCount, global) {
 
     let isLimit = true;
-    if (config.maintainer_id.indexOf(msg.author.id) > -1) isLimit = false;
+    if (index.config.maintainer_id.indexOf(msg.author.id) > -1) isLimit = false;
 
     // Mentions
     msg.mentions.users.array().forEach(user => {

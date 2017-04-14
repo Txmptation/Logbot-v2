@@ -4,7 +4,7 @@
   "description": "Updated version of the discord bot, LogBot!",
   "main": "bot.js",
   "scripts": {
-    "start": "nodemon src/bot.js"
+    "start": "nodemon src/index.js"
   },
   "keywords": [
     "discord",
@@ -13,10 +13,16 @@
   "author": "XeliteXirish",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.17.1",
     "discord.js": "^11.0.0",
+    "express": "^4.15.2",
+    "express-session": "^1.15.2",
     "got": "latest",
     "mysql": "^2.13.0",
     "nodemon": "^1.11.0",
-    "requestify": "^0.2.5"
+    "passport": "^0.3.2",
+    "passport-discord": "^0.1.2",
+    "requestify": "^0.2.5",
+    "serve-favicon": "^2.4.2"
   }
 }

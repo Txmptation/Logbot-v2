@@ -1,33 +1,21 @@
 const Discord = require('discord.js');
-const nodemon = require('nodemon');
-const mysql = require('mysql');
 const fs = require('fs');
 
+const index = require('./../../index');
 const client = exports.client = new Discord.Client();
-const config = exports.config = client.config = require('./../config.json');
 const utils = require('./utils');
 
 const commands = exports.commands = client.commands = {};
 
-let connection = exports.db = mysql.createConnection({
-    host: config.sql_host,
-    user: config.sql_user,
-    password: config.sql_pass,
-    database: config.sql_db
-});
-
 client.on('ready', () => {
-    console.log(`Logbot v2: Connected to ${client.guilds.size} servers, for a total of ${client.channels.size} channels and ${client.users.size} users!`);
 
-    try {
-        //utils.createListTable();  TODO do this at a later date
-    }catch (err){console.error(err.stack)}
+    console.log(`Logbot v2: Connected to ${client.guilds.size} servers, for a total of ${client.channels.size} channels and ${client.users.size} users!`);
 
     loadCommands();
 });
 
 client.on('message', msg => {
-    let command = msg.content.split(' ')[0].substr(config.prefix.length);
+    let command = msg.content.split(' ')[0].substr(index.config.prefix.length);
     const args = msg.content.split(' ').splice(1);
 
     utils.logMessage(msg);
@@ -43,12 +31,7 @@ client.on('message', msg => {
     }
 });
 
-client.login(config.botToken);
-
-process.on('uncaughtException', (err) => {
-    let errorMsg = err.stack.replace(new RegExp(`${__dirname}\/`, 'g'), './');
-    console.error("Uncaught Exception" + errorMsg);
-});
+exports.connect = function(){client.login(index.config.botToken);};
 
 function loadCommands() {
     fs.readdirSync(__dirname + '/commands/').forEach(file => {
@@ -60,5 +43,5 @@ function loadCommands() {
             return;
         }
         commands[command.info.name] = command;
-    })
+    });
 }
