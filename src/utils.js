@@ -21,3 +21,108 @@ exports.getAllGuildTableNames = function () {
         })
     })
 };
+
+/**
+ * Creates the log table for each guild
+ * @param guild
+ * @returns {Promise}
+ */
+exports.createTable = function (guild) {
+
+    return new Promise((resolve, reject) => {
+        exports.doesTableExist(guild).then((exists) => {
+            if (exists) return;
+
+            console.log(`Creating table for ${guild.name}`);
+
+            let query = `CREATE TABLE IF NOT EXISTS ${index.config.sql_db}.id_${guild.id}
+(
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ServerName TEXT,
+    ChannelID VARCHAR(30),
+    ChannelName TEXT,
+    AuthorID VARCHAR(30),
+    AuthorName TEXT,
+    Message LONGTEXT,
+    Vip TINYINT
+);`;
+
+            index.db.query(query, function (err, rows, fields) {
+                if (err) {
+                    console.error(`Error trying to create database, Error ${err.stack}`);
+                    reject(err);
+                    return;
+                }
+                console.log(`Successfully created database for ${guild.name}!`);
+                resolve();
+            })
+        })
+    })
+};
+
+exports.doesTableExist = function (guild) {
+
+    return new Promise((resolve, reject) => {
+
+        let tableName = `id_${guild.id}`;
+
+        index.db.query(`select table_name from information_schema.tables where table_name = '${tableName}';`, function (err, rows, fields) {
+            try {
+
+                if (rows.length > 0) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+
+            } catch (err) {
+                console.error(`Error checking if table exists, Error: ${err.stack}`);
+                reject(err);
+            }
+        });
+    })
+};
+
+exports.uploadToHaste = async function (messages) {
+
+    try {
+
+        let response = await requestify.post(url.resolve('https://hastebin.com', 'documents'), {
+            "Messages": messages
+        });
+
+        let res = JSON.parse(response.body);
+        return res.key || res;
+
+    } catch (err) {
+        console.error(`Failed to upload: ${err.stack}`);
+    }
+
+};
+
+exports.createListTable = function () {
+    if (index.config.needsSetup != 1) return;
+
+    return new Promise((resolve, reject) => {
+        let query = `CREATE TABLE IF NOT EXISTS ${index.config.sql_db}.BotLists
+(
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ServerId VARCHAR(30),
+    ServerName TEXT,
+    UserId VARCHAR(30),
+    Username TEXT,
+    Blacklist TINYINT,
+    VipList TINYINT
+);`;
+
+        index.db.query(query, function (err, rows, fields) {
+            if (err) {
+                console.error(`Error trying to create database, Error ${err.stack}`);
+                reject(err);
+                return;
+            }
+
+            resolve();
+        })
+    })
+};

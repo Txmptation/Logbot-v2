@@ -1,5 +1,5 @@
 const index = require('./../../../index');
-const utils = require('../utils');
+const utils = require('../botUtils');
 
 exports.info = {
     name: 'user',

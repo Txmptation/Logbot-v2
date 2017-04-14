@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const index = require('./../../index');
 const client = exports.client = new Discord.Client();
-const utils = require('./utils');
+const botUtils = require('./botUtils');
 
 const commands = exports.commands = client.commands = {};
 
@@ -18,7 +18,7 @@ client.on('message', msg => {
     let command = msg.content.split(' ')[0].substr(index.config.prefix.length);
     const args = msg.content.split(' ').splice(1);
 
-    utils.logMessage(msg);
+    botUtils.logMessage(msg);
 
     if (msg.author.id !== client.user.id) return;
 
