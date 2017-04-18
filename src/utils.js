@@ -46,6 +46,7 @@ exports.createTable = function (guild) {
     AuthorID VARCHAR(30),
     AuthorName TEXT,
     Message LONGTEXT,
+    Date DATE,
     Vip TINYINT
 );`;
 

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Servers &bull; Logbot</title>
+    <title><%- guildName %> &bull; Logbot</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/serverMsg.css">
+    <link rel="stylesheet" href="/css/loading.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=201610241153">
     <link rel="icon" type="image/png" href="/favicon-32x32.png?v=201610241153" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-16x16.png?v=201610241153" sizes="16x16">
@@ -29,6 +30,7 @@
     var guildName = '<%- guildName %>';
     var guildChannels = JSON.parse('<%- guildChannels %>');
     var guildChannelsLength = JSON.parse(<%- guildChannelsLength %>);
+    var entriesPerPage = <%- entriesPerPage %>
 </script>
 
 <section id="hero_section" class="hero is-dark is-medium">
@@ -113,9 +115,52 @@
             </tbody>
         </table>
 
+        <div class="container has-text-centered" id="loadingSpinner">
+            <br><br><br><br>
+            <div class="windows8">
+                <div class="wBall" id="wBall_1">
+                    <div class="wInnerBall"></div>
+                </div>
+                <div class="wBall" id="wBall_2">
+                    <div class="wInnerBall"></div>
+                </div>
+                <div class="wBall" id="wBall_3">
+                    <div class="wInnerBall"></div>
+                </div>
+                <div class="wBall" id="wBall_4">
+                    <div class="wInnerBall"></div>
+                </div>
+                <div class="wBall" id="wBall_5">
+                    <div class="wInnerBall"></div>
+                </div>
+            </div>
+            <br><br><br><br>
+        </div>
+
+        <div class="container" style="float: right; margin-right: 10px">
+            <small id="totalEntries"><b><i><%- serverMessages.length %></i> total entries!</b></small>
+        </div>
+
+        <div class="has-text-centered">
+            <a id="buttonBack" class="button" onclick="loadPreviousPage()">
+                <span class="icon is-small">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </span>
+                <span>Back</span>
+            </a>
+
+            <a id="buttonNext" class="button" onclick="loadNextPage()">
+                <span>Next</span>
+                <span class="icon is-small">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </span>
+            </a>
+        </div>
+
     </div>
 
 </div>
 
+<script src="/js/serverMsg.js"></script>
 
 </body>

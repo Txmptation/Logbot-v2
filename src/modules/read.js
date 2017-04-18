@@ -103,7 +103,7 @@ function getGuildMessages(guildId) {
         try {
 
             let results = [];
-            let query = `SELECT ChannelID, ChannelName, AuthorName, AuthorID, Message FROM id_${guildId} ORDER BY id DESC`;
+            let query = `SELECT * FROM id_${guildId} ORDER BY id DESC`;
 
             index.db.query(query, ((err, rows, fields) => {
                 if (err) {
@@ -119,7 +119,8 @@ function getGuildMessages(guildId) {
                         channelName: rows[x].ChannelName,
                         authorName: rows[x].AuthorName,
                         authorID: rows[x].AuthorID,
-                        message: rows[x].Message
+                        message: rows[x].Message,
+                        date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
                     };
                     results.push(message);
                 }
@@ -145,7 +146,7 @@ function getAllMessages() {
                 for (let x = 0; x < tables.length; x++) {
                     let table = tables[x];
 
-                    let query = `SELECT ServerName, ChannelID, ChannelName, AuthorName, AuthorID, Message FROM ${table} ORDER BY id DESC`;
+                    let query = `SELECT * FROM ${table} ORDER BY id DESC`;
                     index.db.query(query, function (err, rows, fields) {
                         if (err) {
                             console.error(`An error occurred when reading messages, Error: ${err.stack}`);
@@ -161,7 +162,8 @@ function getAllMessages() {
                                 channelName: rows[x].ChannelName,
                                 authorName: rows[x].AuthorName,
                                 authorID: rows[x].AuthorID,
-                                message: rows[x].Message
+                                message: rows[x].Message,
+                                date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
                             };
                             results.push(message);
 
