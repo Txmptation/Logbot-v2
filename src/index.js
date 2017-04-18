@@ -16,6 +16,7 @@ let connection;
 const bot = exports.bot = require('./modules/bot/bot');
 const auth = exports.auth = require('./modules/auth');
 const read = exports.read = require('./modules/read');
+const web = exports.web = require('./modules/web');
 
 try {
 
@@ -29,9 +30,9 @@ try {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(express.static('Web'));
-    app.set('views', `${__dirname}/Views`);
+    app.set('views', `${__dirname}/views`);
     app.set('view engine', 'ejs');
-    app.use('/', express.static(`${__dirname}/Static`));
+    app.use('/', express.static(`${__dirname}/static`));
     app.use(session({
         secret: config.session_secret,
         resave: true,
@@ -46,6 +47,7 @@ try {
     bot.connect();
     auth(config, app, passport, DiscordS);
     read(app, config);
+    web(app, config);
 
 }catch (err) {
     console.error(`An error occurred during module initialisation, Error: ${err.stack}`);

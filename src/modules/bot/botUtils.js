@@ -116,6 +116,37 @@ exports.getColour = function (colourCode) {
     }
 };
 
+exports.getUserFromID = function (userId) {
+    let user = client.users.get(userId);
+    if (user) return user;
+    else return null;
+};
+
+exports.getGuildNameFromId = function (guildId) {
+    let guild = bot.client.guilds.get(guildId);
+    if (guild) return guild;
+    else return null;
+};
+
+exports.getBotGuilds = function () {
+    return Array.from(bot.client.guilds);
+};
+
+exports.getGuildChannels = function (guildId) {
+    let guild = bot.client.guilds.get(guildId);
+    let results = [];
+
+    if (!guild) return console.error('An error has occurred trying to find guild: ' + guildId);
+
+    guild.channels.array().forEach(channel => {
+        if (channel.type === 'text') {
+            let data = {name: channel.name.capitalizeFirstLetter().replaceAll('_', ' '), id: channel.id};
+            results.push(data);
+        }
+    });
+    return results;
+};
+
 exports.getRandomColor = function () {
     return [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
 };
@@ -124,3 +155,7 @@ String.prototype.replaceAll = function (search, replacement) {
     let target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
+
+String.prototype.capitalizeFirstLetter = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}

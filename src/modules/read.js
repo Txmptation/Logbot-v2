@@ -77,7 +77,7 @@ function sendResponse(req, res, messages, countMessages) {
     if (messages.length > 0) {
 
         if (countMessages) {
-            res.json({"messages": `Messages returned for ${req.query.serverid}: ${messages.length}`});
+            res.json({"messages": messages.length});
             return;
         }
 
@@ -103,7 +103,7 @@ function getGuildMessages(guildId) {
         try {
 
             let results = [];
-            let query = `SELECT ChannelID, ChannelName, AuthorName, AuthorID, Message FROM id_${guildId}`;
+            let query = `SELECT ChannelID, ChannelName, AuthorName, AuthorID, Message FROM id_${guildId} ORDER BY id DESC`;
 
             index.db.query(query, ((err, rows, fields) => {
                 if (err) {
@@ -145,7 +145,7 @@ function getAllMessages() {
                 for (let x = 0; x < tables.length; x++) {
                     let table = tables[x];
 
-                    let query = `SELECT ServerName, ChannelID, ChannelName, AuthorName, AuthorID, Message FROM ${table}`;
+                    let query = `SELECT ServerName, ChannelID, ChannelName, AuthorName, AuthorID, Message FROM ${table} ORDER BY id DESC`;
                     index.db.query(query, function (err, rows, fields) {
                         if (err) {
                             console.error(`An error occurred when reading messages, Error: ${err.stack}`);

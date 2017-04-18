@@ -1,4 +1,6 @@
 const index = require('./index');
+const botUtils = require('./modules/bot/botUtils');
+const requestify = require('requestify');
 
 exports.getAllGuildTableNames = function () {
 
@@ -125,4 +127,44 @@ exports.createListTable = function () {
             resolve();
         })
     })
+};
+
+exports.countGuildMessages = function (guildId) {
+    return new Promise((resolve, reject) => {
+        requestify.get(`${index.config.host}/api/read?serverid=${guildId}&count=true`).then(res => {
+            try {
+                let body = JSON.parse(res.body);
+                resolve(body.message);
+
+            } catch (err) {
+                console.error(`An error has occurred trying to count messages, Error: ${err.stack}`);
+                reject(err);
+            }
+        })
+    })
+};
+
+exports.getUserVisibleGuilds = function (userId) {
+
+    let guildMember = index.bot.client.users.get(userId);
+    //if (!guildMember) return null;
+
+    let results = [];
+
+    botUtils.getBotGuilds().forEach(guild => {
+        guild = guild[1];
+
+        let guildObj = {
+            id: guild.id,
+            name: guild.name,
+            members: guild.memberCount,
+            icon: guild.icon,
+            region: guild.region
+        };
+
+
+        // Checks perms
+        results.push(guildObj);
+    });
+    return results;
 };

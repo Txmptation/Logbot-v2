@@ -30,8 +30,7 @@ module.exports = function (config, app, passport, DiscordS) {
 
     app.get('/login', (req, res, next) => {
         if (req.query.redirection) req.session.redirect = req.query.redirection;
-
-        passport.authenticate('discord', {scopes: scopes, callbackURL: `${config.host}/login/callback`}) (req, res, next);
+        passport.authenticate('discord', {scope: scopes, callbackURL: `${config.host}/login/callback`})(req, res, next);
     });
 
     app.get('/login/callback', passport.authenticate('discord', {failureRedirect: '/error'}), (req, res) => {

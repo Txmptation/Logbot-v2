@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Servers &bull; Logbot</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=201610241153">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png?v=201610241153" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png?v=201610241153" sizes="16x16">
+    <link rel="manifest" href="/manifest.json?v=201610241153">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=201610241153" color="#468fcc">
+    <link rel="shortcut icon" href="/favicon.ico?v=201610241153">
+
+    <meta name="author" content="XeliteXirish">
+    <meta name="description" content="Open-Source dev team">
+
+    <meta name="apple-mobile-web-app-title" content="Logbot">
+    <meta name="application-name" content="Logbot">
+    <meta name="theme-color" content="#00c0fc">
+</head>
+
+<body>
+
+<%# Have to do it here before using the variable!%>
+<script>
+    var visibleGuilds = JSON.parse('<%- visibleServers %>');
+</script>
+
+<section id="hero_section" class="hero is-dark is-medium">
+    <div class="hero-head">
+        <nav class="nav has-shadow">
+            <div class="container">
+
+                <div class="nav-left">
+                    <%- include partials/title.ejs %>
+                </div>
+
+                <span class="nav-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                </span>
+
+                <div class="nav-right nav-menu">
+                    <a class="nav-item" href="/">Home</a>
+                    <a class="nav-item is-active" href="/servers">Servers</a>
+
+                    <p class="nav-item control has-addons">
+                        <a class="button is-info is-outlines" href="/add">
+                            <span class="icon is-small">
+                                <i class="fa fa-plus"></i>
+                            </span>
+                            <span>Add</span>
+                        </a>
+
+                        <%- include partials/login.ejs %>
+                    </p>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <h1 class="title is-1">
+                Logbot v2
+            </h1>
+            <h2 class="subtitle is-4">
+                <span>Keep track of what all you're users are doing on other servers!</span>
+            </h2>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="header">
+            <h1 class="title">
+                <strong>&bull;Bot Guilds:</strong>
+            </h1>
+            <h2 class="subtitle">
+                These are the guilds that you have permissions to view message logs for!
+            </h2>
+        </div>
+
+        <br><br>
+
+        <div class="has-text-centered box">
+
+            <div style="float: right;">
+                <p class="control has-addons">
+                    <input id="input_search_guild" onkeyup="searchGuildTable()" class="input" type="search"
+                           placeholder="Search guilds..">
+                    <a class="button is-info" onclick="searchGuildTable()">Search</a>
+                </p>
+            </div>
+            <br><br>
+
+            <table class="table is-stripped">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Guild Name</th>
+                    <th>Members</th>
+                    <th>Region</th>
+                </tr>
+                </thead>
+
+                <tbody id="guild_list_table">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="/js/servers.js"></script>
+
+</body>
