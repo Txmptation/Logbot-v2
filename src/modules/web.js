@@ -112,7 +112,7 @@ function checkAuth(req, res, next) {
 
         req.session.redirect = req.path;
         res.status(403);
-        res.render('badlogin', {
+        res.render('badLogin', {
 
             loggedInStatus: req.isAuthenticated(),
             userRequest: req.user || false,
