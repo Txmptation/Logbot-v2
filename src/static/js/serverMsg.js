@@ -1,9 +1,27 @@
 let currentPage = 1;
+let currentChannelId = 'all';
+let newMessageList = serverMessages;
 let maxPages = Math.floor(serverMessages.length / entriesPerPage) + 1;
 
 function changeChannelView(channelId) {
-    let isAll = false;
-    if (channelId === 'all') isAll = true;
+    if (channelId !== currentChannelId) {
+
+        if (channelId == 'all') {
+            loadDefaultPage();
+            return;
+        }
+
+        currentChannelId = channelId;
+
+        newMessageList = [];
+        for (let x = 0; x < serverMessages.length; x++) {
+            if (serverMessages[x].channelID == channelId) {
+                newMessageList.push(serverMessages[x]);
+                console.log(serverMessages[x])
+            }
+        }
+        loadPage(1);
+    }
 }
 
 function getEntriesToStart(page) {
@@ -37,19 +55,18 @@ function checkPreviousPage() {
 }
 
 function loadDefaultPage() {
+    newMessageList = serverMessages;
     loadPage(currentPage);
 }
 
 function loadNextPage() {
     if (checkNextPage()) {
-        clearEntries();
         loadPage(currentPage + 1);
     }
 }
 
 function loadPreviousPage() {
     if (checkPreviousPage()) {
-        clearEntries();
         loadPage(currentPage - 1);
     }
 }
@@ -64,6 +81,8 @@ function clearEntries() {
 function loadPage(page) {
     currentPage = page;
 
+    clearEntries();
+
     checkNextPage();
     checkPreviousPage();
 
@@ -71,14 +90,15 @@ function loadPage(page) {
     let entriestoStop = getEntriesToStop(page);
 
     for (let x = entriesToStart; x < entriestoStop; x++) {
-        if (typeof serverMessages[x] === 'undefined') return;
+        if (typeof newMessageList[x] === 'undefined') return;
 
-        let messageObj = serverMessages[x];
+        let messageObj = newMessageList[x];
 
         createMessage(messageObj.authorName, messageObj.channelName, messageObj.date, messageObj.message);
     }
 
     hideSpinner();
+    updateEntriesNum();
 
     if (serverMessages[entriestoStop] - serverMessages[entriesToStart] == 0) {
         showBrokenTooltip();
@@ -127,6 +147,11 @@ function hideSpinner() {
     let spinner = document.getElementById("loadingSpinner");
 
     spinner.setAttribute("style", "display: none;");
+}
+
+function updateEntriesNum() {
+    let num = document.getElementById('totalEntries');
+    num.innerHTML = `<b><i>${newMessageList.length}</i> total entries!</b>`
 }
 
 loadDefaultPage();

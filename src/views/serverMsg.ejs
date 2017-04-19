@@ -85,14 +85,14 @@
         <div class="main">
             <div class="title">Text Channels</div>
 
-            <a id="allChannels" onclick='changeChannelView("ALL")' class="item is-active">
+            <a id="allChannels" onclick='changeChannelView("all")' class="item is-active">
                 <span class="name"><b>All Channels</b></span>
             </a>
 
             <% for(var x = 0; x < JSON.parse(guildChannels).length; x++) { %>
-            <a id='channelId_<% JSON.parse(guildChannels)[x].id %>'
-               onclick="changeChannelView(JSON.parse(guildChannels)[x].id)" class="item"></a>
-            <span class="name"><%- JSON.parse(guildChannels)[x].name %></span>
+            <a onclick=changeChannelView(<%- JSON.parse(guildChannels)[x].id %>) class="item">
+                <span class="name"><%- JSON.parse(guildChannels)[x].name %></span>
+            </a>
             <% } %>
 
         </div>

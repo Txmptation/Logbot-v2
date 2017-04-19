@@ -14,7 +14,7 @@ const url = require('url');
  */
 exports.logMessage = async function (message) {
 
-    if (!message.content) return console.log("NO MESSAGE");
+    if (!message.content) return null;
 
     let tableExists = await utils.doesTableExist(message.guild);
     if (tableExists) {
