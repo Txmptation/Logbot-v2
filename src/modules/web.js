@@ -64,23 +64,33 @@ module.exports = function (app, config) {
 
     // Error
     app.get("/error", (req, res) => {
-        res.render('error', {
-            loggedInStatus: req.isAuthenticated(),
-            userRequest: req.user || false,
-            error_code: 500,
-            error_text: "Why did you go to this URL? Normally an error message will be displayed here.",
-            googleAnalyticsCode: config.googleAnalyticsCode
-        })
+        try {
+            res.render('error', {
+                loggedInStatus: req.isAuthenticated(),
+                userRequest: req.user || false,
+                error_code: 500,
+                error_text: "Why did you go to this URL? Normally an error message will be displayed here.",
+                googleAnalyticsCode: config.googleAnalyticsCode
+            })
+        } catch (err) {
+            console.error(`An error has occurred trying to load the error page, Error: ${err.stack}`);
+            renderErrorPage(req, res, err);
+        }
     });
 
     //404 Error page (Must be the last route!)
     app.use(function (req, res, next) {
-        res.render('error', {
-            loggedInStatus: req.isAuthenticated(),
-            userRequest: req.user || false,
-            error_code: 404,
-            error_text: "The page you requested could not be found or rendered. Please check your request URL for spelling errors and try again. If you believe this error is faulty, please contact a system administrator.",
-        })
+        try {
+            res.render('error', {
+                loggedInStatus: req.isAuthenticated(),
+                userRequest: req.user || false,
+                error_code: 404,
+                error_text: "The page you requested could not be found or rendered. Please check your request URL for spelling errors and try again. If you believe this error is faulty, please contact a system administrator.",
+            })
+        } catch (err) {
+            console.error(`An error has occurred trying to load the 404 page, Error: ${err.stack}`);
+            renderErrorPage(req, res, err);
+        }
     })
 
 };
@@ -92,8 +102,13 @@ function checkAuth(req, res, next) {
 
         req.session.redirect = req.path;
         res.status(403);
-        res.render('badlogin', {});
+        res.render('badlogin', {
+
+            loggedInStatus: req.isAuthenticated(),
+            userRequest: req.user || false,
+        });
     } catch (err) {
+        console.error(`An error has occurred trying to check auth, Error: ${err.stack}`);
         renderErrorPage(req, res, err);
     }
 }
