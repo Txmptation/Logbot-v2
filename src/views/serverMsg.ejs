@@ -30,6 +30,7 @@
     var guildName = '<%- guildName %>';
     var guildChannels = JSON.parse('<%- guildChannels %>');
     var guildChannelsLength = JSON.parse(<%- guildChannelsLength %>);
+    var guildMemberCount = '<%- guildMemberCount %>'
     var entriesPerPage = <%- entriesPerPage %>
 </script>
 
@@ -73,8 +74,10 @@
             <h1 class="title is-1">
                 Logbot v2
             </h1>
+            <br>
             <h2 class="subtitle is-4">
-                <span><b>&bull;<%- guildName %></b> - Logging <%- guildChannelsLength %> channels!</span>
+                <span><b>&bull;<%- guildName %></b> - Logging <%- guildChannelsLength %>
+                    channels with <%- guildMemberCount %> users!</span>
             </h2>
         </div>
     </div>
@@ -83,15 +86,15 @@
 <div class="columns">
     <aside class="column is-2 aside hero">
         <div class="main">
-            <div class="title">Text Channels</div>
 
-            <a id="allChannels" onclick='changeChannelView("all")' class="item is-active">
-                <span class="name"><b>All Channels</b></span>
+            <a id="id_all" onclick='changeChannelView("all")' class="item active">
+                <span class="name"><b> ~ All Channels ~ </b></span>
             </a>
 
             <% for(var x = 0; x < JSON.parse(guildChannels).length; x++) { %>
-            <a onclick=changeChannelView(<%- JSON.parse(guildChannels)[x].id %>) class="item">
-                <span class="name"><%- JSON.parse(guildChannels)[x].name %></span>
+            <a id="id_<%- JSON.parse(guildChannels)[x].id %>"
+               onclick=changeChannelView('<%- JSON.parse(guildChannels)[x].id %>') class="item">
+                <span class="name">&bull;&nbsp;<%- JSON.parse(guildChannels)[x].name %></span>
             </a>
             <% } %>
 

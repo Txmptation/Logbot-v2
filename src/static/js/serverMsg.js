@@ -4,7 +4,13 @@ let newMessageList = serverMessages;
 let maxPages = Math.floor(serverMessages.length / entriesPerPage) + 1;
 
 function changeChannelView(channelId) {
-    if (channelId !== currentChannelId) {
+    if (channelId != currentChannelId) {
+
+        let oldItem = document.getElementById('id_' + currentChannelId);
+        oldItem.setAttribute('class', 'item');
+
+        let newItem = document.getElementById(`id_${channelId}`);
+        newItem.setAttribute('class', 'item active');
 
         if (channelId == 'all') {
             loadDefaultPage();
@@ -12,13 +18,11 @@ function changeChannelView(channelId) {
         }
 
         currentChannelId = channelId;
+        maxPages = Math.floor(newMessageList.length / entriesPerPage) + 1;
 
         newMessageList = [];
         for (let x = 0; x < serverMessages.length; x++) {
-            if (serverMessages[x].channelID == channelId) {
-                newMessageList.push(serverMessages[x]);
-                console.log(serverMessages[x])
-            }
+            if (serverMessages[x].channelID == channelId) newMessageList.push(serverMessages[x]);
         }
         loadPage(1);
     }
@@ -55,6 +59,7 @@ function checkPreviousPage() {
 }
 
 function loadDefaultPage() {
+    maxPages = Math.floor(serverMessages.length / entriesPerPage) + 1;
     newMessageList = serverMessages;
     loadPage(currentPage);
 }
@@ -100,7 +105,7 @@ function loadPage(page) {
     hideSpinner();
     updateEntriesNum();
 
-    if (serverMessages[entriestoStop] - serverMessages[entriesToStart] == 0) {
+    if (newMessageList[entriestoStop] - newMessageList[entriesToStart] == 0) {
         showBrokenTooltip();
     }
 }

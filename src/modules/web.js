@@ -48,6 +48,7 @@ module.exports = function (app, config) {
                     guildName: botUtils.getGuildNameFromId(id),
                     guildChannels: guildChannels,
                     guildChannelsLength: botUtils.getGuildChannels(id).length,
+                    guildMemberCount: botUtils.getGuildMemberCount(id),
                     entriesPerPage: config.entriesPerPage,
                     loggedInStatus: req.isAuthenticated(),
                     userRequest: req.user || false

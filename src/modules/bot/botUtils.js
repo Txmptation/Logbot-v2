@@ -135,6 +135,13 @@ exports.getBotGuilds = function () {
     return Array.from(bot.client.guilds);
 };
 
+
+exports.getGuildMemberCount = function (guildId) {
+    let guild = bot.client.guilds.get(guildId);
+    if (guild) return guild.memberCount;
+    else return null;
+};
+
 exports.getGuildChannels = function (guildId) {
     let guild = bot.client.guilds.get(guildId);
     let results = [];
