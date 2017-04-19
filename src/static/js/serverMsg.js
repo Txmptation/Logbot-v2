@@ -75,7 +75,7 @@ function loadPage(page) {
 
         let messageObj = serverMessages[x];
 
-        createMessage(messageObj.authorName, messageObj.date, messageObj.message);
+        createMessage(messageObj.authorName, messageObj.channelName, messageObj.date, messageObj.message);
     }
 
     hideSpinner();
@@ -85,7 +85,7 @@ function loadPage(page) {
     }
 }
 
-function createMessage(username, date, message) {
+function createMessage(username, channel, date, message) {
     let parent = document.getElementById('message_list_table');
 
     let msg = document.createElement('tr');
@@ -98,6 +98,11 @@ function createMessage(username, date, message) {
     usernameFormatting.appendChild(usernameText);
     usernameSpace.appendChild(usernameFormatting);
     msg.appendChild(usernameSpace);
+
+    let channelSpace = document.createElement('td');
+    let channelText = document.createTextNode(channel);
+    channelSpace.appendChild(channelText);
+    msg.appendChild(channelSpace);
 
     let dateSpace = document.createElement('td');
     let dateText = document.createTextNode(date);

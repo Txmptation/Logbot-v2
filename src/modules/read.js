@@ -116,7 +116,7 @@ function getGuildMessages(guildId) {
                     let message = {
                         serverID: guildId,
                         channelID: rows[x].ChannelID,
-                        channelName: rows[x].ChannelName,
+                        channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
                         authorName: rows[x].AuthorName,
                         authorID: rows[x].AuthorID,
                         message: rows[x].Message,

@@ -14,6 +14,8 @@ const url = require('url');
  */
 exports.logMessage = async function (message) {
 
+    if (!message.content) return console.log("NO MESSAGE");
+
     let tableExists = await utils.doesTableExist(message.guild);
     if (tableExists) {
         let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, Date) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.username)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(new Date().toJSON().slice(0, 10))})`
@@ -32,9 +34,9 @@ exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal)
     return new Promise((resolve, reject) => {
 
         let url = `${index.config.host}/api/read?authorid=${user.id}`;
-        if (isGlobal) url += `serverid=${guild.id}`;
+        if (!isGlobal) url += `&serverid=${guild.id}`;
 
-        requestify.get(`${index.config.host}/api/read?serverid=${guild.id}&authorid=${user.id}`).then(res => {
+        requestify.get(url).then(res => {
 
             try {
                 let body = JSON.parse(res.body);
@@ -44,10 +46,11 @@ exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal)
                     let message = {
                         serverID: guildId,
                         channelID: rows[x].ChannelID,
-                        channelName: rows[x].ChannelName,
+                        channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
                         authorName: rows[x].AuthorName,
                         authorID: rows[x].AuthorID,
-                        message: rows[x].Message
+                        message: rows[x].Message,
+                        date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
                     };
 
                     results.push(message);
@@ -117,7 +120,7 @@ exports.getColour = function (colourCode) {
 };
 
 exports.getUserFromID = function (userId) {
-    let user = client.users.get(userId);
+    let user = bot.client.users.get(userId);
     if (user) return user;
     else return null;
 };

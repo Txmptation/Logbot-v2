@@ -1,6 +1,7 @@
 {
   "server_ip": "37.139.8.77",
   "server_port": "80",
+  "host": "http://localhost:80",
   "botToken": "MjM1MTc1MTcyNzA4MTA2MjQw.C9KKtw._4CPQODW0Lbkey_ObnGYWMrgni0",
   "prefix": "#!",
   "maintainer_id": [
@@ -14,5 +15,6 @@
   "clientSecret": "hkzwSDQjajKm36I34hVAQbvI0XpSQQFc",
   "session_secret": "kekekekek",
   "default_message_search": 50,
+  "entriesPerPage": 50,
   "msg_delete_time": 20000
 }
