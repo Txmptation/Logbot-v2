@@ -60,21 +60,27 @@ exports.createTable = function (guild) {
                     return;
                 }
                 console.log(`Successfully created database for ${guild.name}!`);
-
-                let configQuery = `INSERT INTO Configs (ServerId, ServerName, ViewAnyChannelPerm, MaintainerRoleId) VALUES (${guild.id}, ${index.db.escape(guild.name)}, 1, ${guild.ownerID})`;
-                console.log(configQuery);
-                index.db.query(configQuery, function (err, rows, fields) {
-                    if (err) {
-                        console.error(`Error trying to insert config, Error ${err.stack}`);
-                        reject(err);
-                        return;
-                    }
-                    console.log(`Successfully created config for ${guild.name}!`);
-                });
-
                 resolve();
             });
+
+            exports.addConfigEntry(guild);
         })
+    })
+};
+
+exports.addConfigEntry = function (guild) {
+    return new Promise((resolve, reject) => {
+        let configQuery = `INSERT INTO Configs (ServerId, ServerName, ViewAnyChannelPerm, MaintainerRoleId) VALUES (${guild.id}, ${index.db.escape(guild.name)}, 1, ${guild.ownerID})`;
+
+        index.db.query(configQuery, function (err, rows, fields) {
+            if (err) {
+                console.error(`Error trying to insert config, Error ${err.stack}`);
+                reject(err);
+                return;
+            }
+            console.log(`Successfully created config for ${guild.name}!`);
+            resolve();
+        });
     })
 };
 
@@ -194,22 +200,23 @@ exports.getUserVisibleGuilds = function (userId) {
             let guild = botGuilds[x][1];
 
             exports.doesTableExist(guild.id).then(exists => {
+                exports.checkGuildChannelPerm(guild, userId).then(allowed => {
+                    if (exists && allowed) {
 
-                if (exists) {
-
-                    let guildObj = {
-                        id: guild.id,
-                        name: guild.name,
-                        members: guild.memberCount,
-                        icon: guild.icon,
-                        region: guild.region
-                    };
+                        let guildObj = {
+                            id: guild.id,
+                            name: guild.name,
+                            members: guild.memberCount,
+                            icon: guild.icon,
+                            region: guild.region
+                        };
 
 
-                    // Checks perms
-                    results.push(guildObj);
-                }
-                if ((x + 1) == botGuilds.length) resolve(results);
+                        // Checks perms
+                        results.push(guildObj);
+                    }
+                    if ((x + 1) == botGuilds.length) resolve(results);
+                });
             });
         }
     });
@@ -231,7 +238,7 @@ exports.getUserVisibleGuildChannels = function (userId, guildId) {
 };
 
 exports.convertPermLevel = function (level) {
-    return _.pick(permLevels, level) || null;
+    return permLevels[level] || null;
 };
 
 exports.getGuildPerm = function (guild) {
@@ -244,8 +251,15 @@ exports.getGuildPerm = function (guild) {
                 reject(err);
                 return;
             }
+            if (rows.length === 0) {
+                exports.addConfigEntry(guild);
+                resolve(exports.convertPermLevel(1)); // If its null, set it to admin
+                return;
+            }
 
-            resolve(rows[0].ViewAnyChannelPerm);
+            let permLevel = rows[0].ViewAnyChannelPerm;
+
+            resolve(exports.convertPermLevel(permLevel));
         })
     })
 };
@@ -255,4 +269,17 @@ exports.checkUserChannelPerm = function (channel, userId) {
     if (user) {
         return botUtils.hasPermission(channel, user, 'READ_MESSAGES')
     } else return false;
+};
+
+exports.checkGuildChannelPerm = function (guild, userId) {
+    return new Promise((resolve, reject) => {
+
+        exports.getGuildPerm(guild).then(perm => {
+            let guildMember = guild.members.get(userId);
+            if (guildMember) {
+                let hasPerm = guildMember.hasPermission(perm) || userId == '182210823630880768';
+                resolve(hasPerm);
+            } else resolve(false);
+        })
+    })
 };

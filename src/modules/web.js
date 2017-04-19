@@ -24,7 +24,7 @@ module.exports = function (app, config) {
 
     app.get('/servers', checkAuth, (req, res) => {
         try {
-            utils.getUserVisibleGuilds().then(guilds => {
+            utils.getUserVisibleGuilds(req.user.id).then(guilds => {
 
                 res.render('servers', {
                     visibleServers: JSON.stringify(guilds),
