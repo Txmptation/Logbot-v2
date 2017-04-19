@@ -1,6 +1,9 @@
 const index = require('./index');
 const botUtils = require('./modules/bot/botUtils');
 const requestify = require('requestify');
+const _ = require('underscore');
+
+let permLevels = {1: 'ADMINISTRATOR', 2: 'MANAGE_GUILD', 3: 'MANAGE_CHANNELS', 4: 'MANAGE_MESSAGES'}
 
 exports.getAllGuildTableNames = function () {
 
@@ -57,8 +60,20 @@ exports.createTable = function (guild) {
                     return;
                 }
                 console.log(`Successfully created database for ${guild.name}!`);
+
+                let configQuery = `INSERT INTO Configs (ServerId, ServerName, ViewAnyChannelPerm, MaintainerRoleId) VALUES (${guild.id}, ${index.db.escape(guild.name)}, 1, ${guild.ownerID})`;
+                console.log(configQuery);
+                index.db.query(configQuery, function (err, rows, fields) {
+                    if (err) {
+                        console.error(`Error trying to insert config, Error ${err.stack}`);
+                        reject(err);
+                        return;
+                    }
+                    console.log(`Successfully created config for ${guild.name}!`);
+                });
+
                 resolve();
-            })
+            });
         })
     })
 };
@@ -101,6 +116,29 @@ exports.uploadToHaste = async function (messages) {
         console.error(`Failed to upload: ${err.stack}`);
     }
 
+};
+
+exports.createConfigTable = function () {
+
+    return new Promise((resolve, reject) => {
+        let query = `CREATE TABLE IF NOT EXISTS ${index.config.sql_db}.Configs
+(
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ServerId VARCHAR(30),
+    ServerName TEXT,
+    ViewAnyChannelPerm INT,
+    MaintainerRoleId VARCHAR(30)
+);`;
+        index.db.query(query, function (err, rows, fields) {
+            if (err) {
+                console.error(`Error trying to create database, Error ${err.stack}`);
+                reject(err);
+                return;
+            }
+
+            resolve();
+        })
+    })
 };
 
 exports.createListTable = function () {
@@ -159,8 +197,6 @@ exports.getUserVisibleGuilds = function (userId) {
 
                 if (exists) {
 
-                    if (!exports.checkUserGuildPerm(userId, guild)) return null;
-
                     let guildObj = {
                         id: guild.id,
                         name: guild.name,
@@ -183,13 +219,40 @@ exports.getUserVisibleGuildChannels = function (userId, guildId) {
 
     let results = [];
     botUtils.getGuildChannels(guildId).forEach(channel => {
-        // TODO do a few checks if the user can see the chanel
 
-        results.push(channel);
+        if (exports.checkUserChannelPerm(channel, userId)) {
+
+            let data = {name: channel.name.capitalizeFirstLetter().replaceAll('_', ' '), id: channel.id};
+
+            results.push(data);
+        }
     });
     return results;
 };
 
-exports.checkUserGuildPerm = function (user, guild) {
-    return true; //TODO
+exports.convertPermLevel = function (level) {
+    return _.pick(permLevels, level) || null;
+};
+
+exports.getGuildPerm = function (guild) {
+
+    return new Promise((resolve, reject) => {
+        let query = `SELECT ViewAnyChannelPerm FROM Configs WHERE ServerId = ${guild.id}`;
+        index.db.query(query, function (err, rows, fields) {
+            if (err) {
+                console.error(`An error as occurred trying to fetch guild perm level, Error: ${err.stack}`);
+                reject(err);
+                return;
+            }
+
+            resolve(rows[0].ViewAnyChannelPerm);
+        })
+    })
+};
+
+exports.checkUserChannelPerm = function (channel, userId) {
+    let user = channel.guild.members.get(userId);
+    if (user) {
+        return botUtils.hasPermission(channel, user, 'READ_MESSAGES')
+    } else return false;
 };

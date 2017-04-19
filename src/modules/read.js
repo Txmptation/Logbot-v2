@@ -25,23 +25,28 @@ module.exports = function (app, config) {
 
                 let guildId = req.query.serverid;
 
-                getGuildMessages(guildId).then(messages => {
-                    let results = [];
-                    messages.forEach(msg => {
-                        let removeMsg = false;
+                utils.doesTableExist(guildId).then(exists => {
+                    if (!exists) return res.json({"error": "Sorry but that table doesn't exist"});
 
-                        if (checkChannelId) {
-                            if (!validChannelId(req.query.channelid, msg.channelID)) removeMsg = true;
-                        }
+                    getGuildMessages(guildId).then(messages => {
 
-                        if (checkAuthorId) {
-                            if (!validAuthorId(req.query.authorid, msg.authorID)) removeMsg = true;
-                        }
+                        let results = [];
+                        messages.forEach(msg => {
+                            let removeMsg = false;
 
-                        if (!removeMsg) results.push(msg);
+                            if (checkChannelId) {
+                                if (!validChannelId(req.query.channelid, msg.channelID)) removeMsg = true;
+                            }
+
+                            if (checkAuthorId) {
+                                if (!validAuthorId(req.query.authorid, msg.authorID)) removeMsg = true;
+                            }
+
+                            if (!removeMsg) results.push(msg);
+                        });
+
+                        sendResponse(req, res, results, countMessages);
                     });
-
-                    sendResponse(req, res, results, countMessages);
                 });
 
             } else {

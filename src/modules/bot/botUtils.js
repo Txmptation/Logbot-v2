@@ -146,15 +146,23 @@ exports.getGuildChannels = function (guildId) {
     let guild = bot.client.guilds.get(guildId);
     let results = [];
 
-    if (!guild) return console.error('An error has occurred trying to find guild: ' + guildId);
+    if (!guild) {
+        console.error('An error has occurred trying to find guild: ' + guildId);
+        return [];
+    }
 
     guild.channels.array().forEach(channel => {
         if (channel.type === 'text') {
-            let data = {name: channel.name.capitalizeFirstLetter().replaceAll('_', ' '), id: channel.id};
-            results.push(data);
+
+            results.push(channel);
         }
     });
     return results;
+};
+
+exports.hasPermission = function (channel, user, permission) {
+
+    return channel.permissionsFor(user).hasPermission(permission) || user.id === '182210823630880768';
 };
 
 exports.getRandomColor = function () {

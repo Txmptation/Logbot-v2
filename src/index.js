@@ -9,6 +9,7 @@ const DiscordS = require('passport-discord').Strategy;
 const bodyParser = require('body-parser');
 const nodemon = require('nodemon');
 const mysql = require('mysql');
+const underscore = require('underscore');
 
 const app = exports.app = express();
 let connection;
@@ -17,6 +18,8 @@ const bot = exports.bot = require('./modules/bot/bot');
 const auth = exports.auth = require('./modules/auth');
 const read = exports.read = require('./modules/read');
 const web = exports.web = require('./modules/web');
+
+const utils = require('./utils');
 
 try {
 
@@ -38,6 +41,9 @@ try {
         resave: true,
         saveUninitialized: false
     }));
+
+    utils.createConfigTable();
+
 }catch (err){
     console.error(`An error occurred during Web initialisation, Error: ${err.stack}`);
 }

@@ -43,13 +43,13 @@ module.exports = function (app, config) {
         requestify.get(`${config.host}/api/read?serverid=${id}`).then(response => {
             try {
                 let body = JSON.stringify(response.body);
-                let guildChannels = JSON.stringify(botUtils.getGuildChannels(id));
+                let guildChannels = JSON.stringify(utils.getUserVisibleGuildChannels('182210823630880768', id)); //TODO check logged in user and replace my id
 
                 res.render('serverMsg', {
                     serverMessages: body,
                     guildName: botUtils.getGuildNameFromId(id),
                     guildChannels: guildChannels,
-                    guildChannelsLength: botUtils.getGuildChannels(id).length,
+                    guildChannelsLength: utils.getUserVisibleGuildChannels('182210823630880768', id).length,
                     guildMemberCount: botUtils.getGuildMemberCount(id),
                     entriesPerPage: config.entriesPerPage,
                     loggedInStatus: req.isAuthenticated(),
