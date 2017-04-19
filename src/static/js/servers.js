@@ -23,9 +23,9 @@ function createGuild(guildId, guildName, guildMembers, region, profilePic) {
     let profilePicSpace = document.createElement('td');
     let profileSpan = document.createElement('span');
     profileSpan.setAttribute('class', 'icon is-medium');
-    profileSpan.setAttribute('style', 'border-radius: 100$;');
     let picture = document.createElement('img');
     picture.setAttribute('src', `https://cdn.discordapp.com/icons/${guildId}/${profilePic}.jpg`);
+    picture.setAttribute('style', 'border-radius: 100%;');
 
     profileSpan.appendChild(picture);
     profilePicSpace.appendChild(profileSpan);

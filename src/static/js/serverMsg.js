@@ -107,25 +107,29 @@ function loadPage(page) {
 
     clearEntries();
 
-    checkNextPage();
-    checkPreviousPage();
-
     let entriesToStart = getEntriesToStart(page);
     let entriestoStop = getEntriesToStop(page);
 
     for (let x = entriesToStart; x < entriestoStop; x++) {
-        if (typeof newMessageList[x] === 'undefined') return;
+        if (typeof newMessageList[x] !== 'undefined') {
 
-        let messageObj = newMessageList[x];
+            let messageObj = newMessageList[x];
 
-        createMessage(messageObj.authorName, messageObj.channelName, messageObj.date, messageObj.message);
+            createMessage(messageObj.authorName, messageObj.channelName, messageObj.date, messageObj.message);
+        }
     }
+
+    checkNextPage();
+    checkPreviousPage();
 
     hideSpinner();
     updateEntriesNum();
 
-    if (newMessageList[entriestoStop] - newMessageList[entriesToStart] == 0) {
+    let messagesTable = document.getElementById("message_list_table");
+    if (messagesTable.rows.length === 0) {
         showBrokenTooltip();
+    } else {
+        hideBrokenTooltip();
     }
 }
 
@@ -164,7 +168,14 @@ function createMessage(username, channel, date, message) {
 }
 
 function showBrokenTooltip() {
+    let notification = document.getElementById('noMessages');
+    notification.setAttribute('style', 'display: block');
+}
 
+function hideBrokenTooltip() {
+
+    let notification = document.getElementById('noMessages');
+    notification.setAttribute('style', 'display: none');
 }
 
 function hideSpinner() {
