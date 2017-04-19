@@ -59,6 +59,27 @@ module.exports = function (app, config) {
                 renderErrorPage(req, res, err);
             }
         })
+    });
+
+    // Error
+    app.get("/error", (req, res) => {
+        res.render('error', {
+            loggedInStatus: req.isAuthenticated(),
+            userRequest: req.user || false,
+            error_code: 500,
+            error_text: "Why did you go to this URL? Normally an error message will be displayed here.",
+            googleAnalyticsCode: config.googleAnalyticsCode
+        })
+    });
+
+    //404 Error page (Must be the last route!)
+    app.use(function (req, res, next) {
+        res.render('error', {
+            loggedInStatus: req.isAuthenticated(),
+            userRequest: req.user || false,
+            error_code: 404,
+            error_text: "The page you requested could not be found or rendered. Please check your request URL for spelling errors and try again. If you believe this error is faulty, please contact a system administrator.",
+        })
     })
 
 };

@@ -169,3 +169,14 @@ exports.getUserVisibleGuilds = function (userId) {
     });
     return results;
 };
+
+exports.getUserVisibleGuildChannels = function (userId, guildId) {
+
+    let results = [];
+    botUtils.getGuildChannels(guildId).forEach(channel => {
+        // TODO do a few checks if the user can see the chanel
+
+        results.push(channel);
+    });
+    return results;
+};
