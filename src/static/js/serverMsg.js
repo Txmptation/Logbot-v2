@@ -1,8 +1,8 @@
-let currentPage = 1;
-let currentChannelId = 'all';
-let serverMessages;
-let newMessageList;
-let maxPages;
+var currentPage = 1;
+var currentChannelId = 'all';
+var serverMessages;
+var newMessageList;
+var maxPages;
 
 function loadServerMessages() {
 
