@@ -41,27 +41,25 @@ module.exports = function (app, config) {
     app.get('/servers/:id', checkAuth, (req, res) => {
         let id = req.params.id;
 
-        requestify.get(`${config.host}/api/read?token=${config.requestToken}&serverid=${id}`).then(response => {
-            try {
-                let body = JSON.stringify(response.body);
-                let guildChannels = JSON.stringify(utils.getUserVisibleGuildChannels(req.user.id, id)); //TODO check logged in user and replace my id
+        try {
+            let guildChannels = JSON.stringify(utils.getUserVisibleGuildChannels(req.user.id, id)); //TODO check logged in user and replace my id
 
-                res.render('serverMsg', {
-                    serverMessages: body,
-                    guildName: botUtils.getGuildFromId(id).name,
-                    guildChannels: guildChannels,
-                    guildChannelsLength: utils.getUserVisibleGuildChannels('182210823630880768', id).length,
-                    guildMemberCount: botUtils.getGuildMemberCount(id),
-                    entriesPerPage: config.entriesPerPage,
-                    loggedInStatus: req.isAuthenticated(),
-                    userRequest: req.user || false
-                })
+            res.render('serverMsg', {
+                serverHost: config.host,
+                guildName: botUtils.getGuildFromId(id).name,
+                guildId: id,
+                guildChannels: guildChannels,
+                guildChannelsLength: utils.getUserVisibleGuildChannels('182210823630880768', id).length,
+                guildMemberCount: botUtils.getGuildMemberCount(id),
+                entriesPerPage: config.entriesPerPage,
+                loggedInStatus: req.isAuthenticated(),
+                userRequest: req.user || false
+            })
 
-            } catch (err) {
-                console.error(`An error has occurred trying to parse body, Error: ${err.stack}`);
-                renderErrorPage(req, res, err);
-            }
-        })
+        } catch (err) {
+            console.error(`An error has occurred trying to parse body, Error: ${err.stack}`);
+            renderErrorPage(req, res, err);
+        }
     });
 
     // Error

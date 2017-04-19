@@ -26,8 +26,9 @@
 
 <%# Have to do it here before using the variable!%>
 <script>
-    var serverMessages = JSON.parse(<%- serverMessages %>);
+    var serverHost = '<%- serverHost %>'
     var guildName = '<%- guildName %>';
+    var guildId = '<%- guildId %>'
     var guildChannels = JSON.parse('<%- guildChannels %>');
     var guildChannelsLength = JSON.parse(<%- guildChannelsLength %>);
     var guildMemberCount = '<%- guildMemberCount %>'
@@ -142,7 +143,7 @@
         </div>
 
         <div class="container" style="float: right; margin-right: 10px">
-            <small id="totalEntries"><b><i><%- serverMessages.length %></i> total entries!</b></small>
+            <small id="totalEntries"></small>
         </div>
 
         <div class="has-text-centered">

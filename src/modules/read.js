@@ -6,7 +6,7 @@ module.exports = function (app, config) {
 
     app.get('/api/read', ((req, res) => {
 
-        if (!req.isAuthenticated() && req.query.token !== config.requestToken) {
+        if (!req.isAuthenticated()) {
             res.status(401).send('Session not authenticated!');
             return;
         }
@@ -129,8 +129,7 @@ function getGuildMessages(req, guildId) {
 
                     let channel = botUtils.getChannelFromId(rows[x].ChannelID);
                     if (channel) {
-                        console.log(JSON.stringify(req.user))
-                        if (utils.checkUserChannelPerm(channel, JSON.stringify(req.user).id)) {
+                        if (utils.checkUserChannelPerm(channel, req.user.id)) {
 
                             let message = {
                                 serverID: guildId,
@@ -187,7 +186,7 @@ function getAllMessages(req) {
                                         serverId: guildId,
                                         serverName: rows[x].ServerName,
                                         channelID: rows[x].ChannelID,
-                                        channelName: rows[x].ChannelName,
+                                        channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
                                         authorName: rows[x].AuthorName,
                                         authorID: rows[x].AuthorID,
                                         message: rows[x].Message,

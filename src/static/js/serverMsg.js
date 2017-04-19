@@ -1,7 +1,26 @@
 let currentPage = 1;
 let currentChannelId = 'all';
-let newMessageList = serverMessages;
-let maxPages = Math.floor(serverMessages.length / entriesPerPage) + 1;
+let serverMessages;
+let newMessageList;
+let maxPages;
+
+function loadServerMessages() {
+
+    var xhrRequest = new XMLHttpRequest();
+    xhrRequest.overrideMimeType("application/json");
+    xhrRequest.open('GET', `${serverHost}/api/read?serverid=${guildId}`);
+    xhrRequest.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+
+            serverMessages = JSON.parse(xhrRequest.responseText);
+            newMessageList = serverMessages;
+            maxPages = Math.floor(serverMessages.length / entriesPerPage) + 1
+            console.log('LOADING')
+            loadDefaultPage();
+        }
+    };
+    xhrRequest.send();
+}
 
 function changeChannelView(channelId) {
     if (channelId != currentChannelId) {
@@ -159,4 +178,4 @@ function updateEntriesNum() {
     num.innerHTML = `<b><i>${newMessageList.length}</i> total entries!</b>`
 }
 
-loadDefaultPage();
+loadServerMessages();
