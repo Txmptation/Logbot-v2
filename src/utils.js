@@ -251,7 +251,7 @@ exports.getGuildPerm = function (guild) {
 };
 
 exports.checkUserChannelPerm = function (channel, userId) {
-    let user = channel.guild.members.get(userId);
+    let user = botUtils.getUserFromID(userId);
     if (user) {
         return botUtils.hasPermission(channel, user, 'READ_MESSAGES')
     } else return false;

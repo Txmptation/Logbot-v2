@@ -12,6 +12,7 @@ module.exports = function (app, config) {
 
     app.get('/', (req, res) => {
         try {
+
             res.render('index', {
                 loggedInStatus: req.isAuthenticated(),
                 userRequest: req.user || false
@@ -21,7 +22,7 @@ module.exports = function (app, config) {
         }
     });
 
-    app.get('/servers', (req, res) => {
+    app.get('/servers', checkAuth, (req, res) => {
         try {
             utils.getUserVisibleGuilds().then(guilds => {
 
@@ -37,17 +38,17 @@ module.exports = function (app, config) {
         }
     });
 
-    app.get('/servers/:id', (req, res) => {
+    app.get('/servers/:id', checkAuth, (req, res) => {
         let id = req.params.id;
 
-        requestify.get(`${config.host}/api/read?serverid=${id}`).then(response => {
+        requestify.get(`${config.host}/api/read?token=${config.requestToken}&serverid=${id}`).then(response => {
             try {
                 let body = JSON.stringify(response.body);
-                let guildChannels = JSON.stringify(utils.getUserVisibleGuildChannels('182210823630880768', id)); //TODO check logged in user and replace my id
+                let guildChannels = JSON.stringify(utils.getUserVisibleGuildChannels(req.user.id, id)); //TODO check logged in user and replace my id
 
                 res.render('serverMsg', {
                     serverMessages: body,
-                    guildName: botUtils.getGuildNameFromId(id),
+                    guildName: botUtils.getGuildFromId(id).name,
                     guildChannels: guildChannels,
                     guildChannelsLength: utils.getUserVisibleGuildChannels('182210823630880768', id).length,
                     guildMemberCount: botUtils.getGuildMemberCount(id),

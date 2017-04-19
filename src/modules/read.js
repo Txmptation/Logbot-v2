@@ -1,14 +1,15 @@
 const index = require('./../index');
 const utils = require('./../utils');
+const botUtils = require('./bot/botUtils');
 
 module.exports = function (app, config) {
 
     app.get('/api/read', ((req, res) => {
 
-        /*if (!req.isAuthenticated()) {
-         res.status(401).send('Session not authenticated!');
-         return;
-         }*/
+        if (!req.isAuthenticated() && req.query.token !== config.requestToken) {
+            res.status(401).send('Session not authenticated!');
+            return;
+        }
 
         try {
 
@@ -28,7 +29,7 @@ module.exports = function (app, config) {
                 utils.doesTableExist(guildId).then(exists => {
                     if (!exists) return res.json({"error": "Sorry but that table doesn't exist"});
 
-                    getGuildMessages(guildId).then(messages => {
+                    getGuildMessages(req, guildId).then(messages => {
 
                         let results = [];
                         messages.forEach(msg => {
@@ -46,12 +47,16 @@ module.exports = function (app, config) {
                         });
 
                         sendResponse(req, res, results, countMessages);
+
+                    }).catch(err => {
+                        res.status(404).json({"error": "An unknown error has occurred, contact @XeliteXirish"});
+                        console.error(err.stack);
                     });
                 });
 
             } else {
 
-                getAllMessages().then(messages => {
+                getAllMessages(req).then(messages => {
                     let results = [];
 
                     messages.forEach(msg => {
@@ -69,6 +74,9 @@ module.exports = function (app, config) {
                     });
 
                     sendResponse(req, res, results, countMessages);
+                }).catch(err => {
+                    res.status(404).json({"error": "An unknown error has occurred, contact @XeliteXirish"});
+                    console.error(err.stack);
                 })
             }
         } catch (err) {
@@ -86,7 +94,7 @@ function sendResponse(req, res, messages, countMessages) {
             return;
         }
 
-        res.json(messages);
+        res.status(200).json(messages);
 
     } else {
         res.json({"null": "No results found for that request!"});
@@ -102,7 +110,7 @@ function validAuthorId(authorId, data) {
     return authorId === data;
 }
 
-function getGuildMessages(guildId) {
+function getGuildMessages(req, guildId) {
 
     return new Promise((resolve, reject) => {
         try {
@@ -118,29 +126,36 @@ function getGuildMessages(guildId) {
                 }
 
                 for (let x = 0; x < rows.length; x++) {
-                    let message = {
-                        serverID: guildId,
-                        channelID: rows[x].ChannelID,
-                        channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
-                        authorName: rows[x].AuthorName,
-                        authorID: rows[x].AuthorID,
-                        message: rows[x].Message,
-                        date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
-                    };
-                    results.push(message);
-                }
 
+                    let channel = botUtils.getChannelFromId(rows[x].ChannelID);
+                    if (channel) {
+                        console.log(JSON.stringify(req.user))
+                        if (utils.checkUserChannelPerm(channel, JSON.stringify(req.user).id)) {
+
+                            let message = {
+                                serverID: guildId,
+                                channelID: rows[x].ChannelID,
+                                channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
+                                authorName: rows[x].AuthorName,
+                                authorID: rows[x].AuthorID,
+                                message: rows[x].Message,
+                                date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
+                            };
+                            results.push(message);
+                        } else console.log(`NO PERM`)
+                    }
+                }
                 resolve(results);
             }))
 
         } catch (err) {
-            console.error(`An error occurred when recieving guild messages, Error: ${err.stack}`);
+            console.error(`An error occurred when receiving guild messages, Error: ${err.stack}`);
             reject(err);
         }
     })
 }
 
-function getAllMessages() {
+function getAllMessages(req) {
 
     return new Promise((resolve, reject) => {
         try {
@@ -159,19 +174,28 @@ function getAllMessages() {
                             return;
                         }
 
-                        for (let x = 0; x < rows.length; x++) {
-                            let message = {
-                                serverId: table.split('id_')[1],
-                                serverName: rows[x].ServerName,
-                                channelID: rows[x].ChannelID,
-                                channelName: rows[x].ChannelName,
-                                authorName: rows[x].AuthorName,
-                                authorID: rows[x].AuthorID,
-                                message: rows[x].Message,
-                                date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
-                            };
-                            results.push(message);
+                        let guildId = table.split('id_')[1];
 
+                        for (let x = 0; x < rows.length; x++) {
+
+                            let channel = botUtils.getChannelFromId(rows[x].ChannelID);
+                            if (channel) {
+
+                                if (utils.checkUserChannelPerm(channel, req.user.id)) {
+
+                                    let message = {
+                                        serverId: guildId,
+                                        serverName: rows[x].ServerName,
+                                        channelID: rows[x].ChannelID,
+                                        channelName: rows[x].ChannelName,
+                                        authorName: rows[x].AuthorName,
+                                        authorID: rows[x].AuthorID,
+                                        message: rows[x].Message,
+                                        date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
+                                    };
+                                    results.push(message);
+                                }
+                            }
                         }
 
                         // it'll only continue when its the last one

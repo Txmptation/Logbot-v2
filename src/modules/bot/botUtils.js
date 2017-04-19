@@ -125,9 +125,15 @@ exports.getUserFromID = function (userId) {
     else return null;
 };
 
-exports.getGuildNameFromId = function (guildId) {
+exports.getGuildFromId = function (guildId) {
     let guild = bot.client.guilds.get(guildId);
     if (guild) return guild;
+    else return null;
+};
+
+exports.getChannelFromId = function (channelId) {
+    let channel = bot.client.channels.get(channelId);
+    if (channel) return channel;
     else return null;
 };
 
