@@ -32,7 +32,7 @@ exports.getAllGuildTableNames = function () {
 exports.createTable = function (guild) {
 
     return new Promise((resolve, reject) => {
-        exports.doesTableExist(guild).then((exists) => {
+        exports.doesTableExist(guild.id).then((exists) => {
             if (exists) return;
 
             console.log(`Creating table for ${guild.name}`);
@@ -63,11 +63,11 @@ exports.createTable = function (guild) {
     })
 };
 
-exports.doesTableExist = function (guild) {
+exports.doesTableExist = function (guildId) {
 
     return new Promise((resolve, reject) => {
 
-        let tableName = `id_${guild.id}`;
+        let tableName = `id_${guildId}`;
 
         index.db.query(`select table_name from information_schema.tables where table_name = '${tableName}';`, function (err, rows, fields) {
             try {
@@ -147,27 +147,36 @@ exports.countGuildMessages = function (guildId) {
 
 exports.getUserVisibleGuilds = function (userId) {
 
-    let guildMember = index.bot.client.users.get(userId);
-    //if (!guildMember) return null;
+    return new Promise((resolve, reject) => {
 
-    let results = [];
+        let results = [];
+        let botGuilds = botUtils.getBotGuilds();
 
-    botUtils.getBotGuilds().forEach(guild => {
-        guild = guild[1];
+        for (let x = 0; x < botGuilds.length; x++) {
+            let guild = botGuilds[x][1];
 
-        let guildObj = {
-            id: guild.id,
-            name: guild.name,
-            members: guild.memberCount,
-            icon: guild.icon,
-            region: guild.region
-        };
+            exports.doesTableExist(guild.id).then(exists => {
+
+                if (exists) {
+
+                    if (!exports.checkUserGuildPerm(userId, guild)) return null;
+
+                    let guildObj = {
+                        id: guild.id,
+                        name: guild.name,
+                        members: guild.memberCount,
+                        icon: guild.icon,
+                        region: guild.region
+                    };
 
 
-        // Checks perms
-        results.push(guildObj);
+                    // Checks perms
+                    results.push(guildObj);
+                }
+                if ((x + 1) == botGuilds.length) resolve(results);
+            });
+        }
     });
-    return results;
 };
 
 exports.getUserVisibleGuildChannels = function (userId, guildId) {
@@ -179,4 +188,8 @@ exports.getUserVisibleGuildChannels = function (userId, guildId) {
         results.push(channel);
     });
     return results;
+};
+
+exports.checkUserGuildPerm = function (user, guild) {
+    return true; //TODO
 };

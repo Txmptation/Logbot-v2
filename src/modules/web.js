@@ -23,13 +23,15 @@ module.exports = function (app, config) {
 
     app.get('/servers', (req, res) => {
         try {
-            let visibleGuilds = utils.getUserVisibleGuilds();
+            utils.getUserVisibleGuilds().then(guilds => {
 
-            res.render('servers', {
-                visibleServers: JSON.stringify(visibleGuilds),
-                loggedInStatus: req.isAuthenticated(),
-                userRequest: req.user || false
-            })
+                res.render('servers', {
+                    visibleServers: JSON.stringify(guilds),
+                    loggedInStatus: req.isAuthenticated(),
+                    userRequest: req.user || false
+                })
+            });
+
         } catch (err) {
             renderErrorPage(req, res, err);
         }
