@@ -62,6 +62,16 @@ module.exports = function (app, config) {
         }
     });
 
+    app.get('/add', (req, res) => {
+        try {
+            res.redirect(config.addBotUrl);
+
+        } catch (err) {
+            console.error(`An error occurred trying to redirect to the bot page, Error: ${err.stack}`);
+            renderErrorPage(req, res, err);
+        }
+    });
+
     // Error
     app.get("/error", (req, res) => {
         try {

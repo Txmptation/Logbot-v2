@@ -14,6 +14,7 @@
   "clientID": "235175172708106240",
   "clientSecret": "hkzwSDQjajKm36I34hVAQbvI0XpSQQFc",
   "session_secret": "kekekekek",
+  "addBotUrl": "https://discordapp.com/oauth2/authorize?client_id=235175172708106240&scope=bot&permissions=8",
   "default_message_search": 50,
   "entriesPerPage": 50,
   "msg_delete_time": 20000
