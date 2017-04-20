@@ -49,6 +49,7 @@ module.exports = function (config, app, passport, DiscordS) {
             res.redirect('/');
             return;
         }
+        console.log(req.session.redirect);
         res.redirect(req.session.redirect);
     });
 
