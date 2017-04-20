@@ -72,6 +72,16 @@ module.exports = function (app, config) {
         }
     });
 
+    app.get('/search', (req, res) => {
+        try {
+
+
+        } catch (err) {
+            console.error(`Unable to load search page, Error: ${err.stack}`);
+            renderErrorPage(req, res, err);
+        }
+    });
+
     // Error
     app.get("/error", (req, res) => {
         try {

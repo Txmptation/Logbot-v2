@@ -45,6 +45,10 @@ module.exports = function (config, app, passport, DiscordS) {
             });
             return;
         }
+        if (req.session.redirect === `${config.host}favicon-32x32.png`) {
+            res.redirect('/');
+            return;
+        }
         res.redirect(req.session.redirect);
     });
 
