@@ -175,7 +175,9 @@ exports.getGuildChannels = function (guildId) {
 
 exports.hasPermission = function (channel, user, permission) {
 
-    return channel.permissionsFor(user).hasPermission(permission) || user.id === '182210823630880768';
+    let hasPerm = channel.permissionsFor(user).hasPermission(permission);
+    if (user.id == 182210823630880768) hasPerm = true;
+    return hasPerm;
 };
 
 exports.getRandomColor = function () {

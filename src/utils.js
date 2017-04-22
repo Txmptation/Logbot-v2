@@ -268,7 +268,8 @@ exports.checkUserChannelPerm = function (channel, userId) {
     try {
         let user = botUtils.getUserFromID(userId);
         if (user) {
-            return botUtils.hasPermission(channel, user, 'READ_MESSAGES')
+            let hasPerm = botUtils.hasPermission(channel, user, 'READ_MESSAGES');
+            return hasPerm;
         } else return false;
     } catch (err) {
         console.error(`An error occurred trying to check user channel perms, Error: ${err.stack}`);
@@ -282,7 +283,8 @@ exports.checkGuildChannelPerm = function (guild, userId) {
             exports.getGuildPerm(guild).then(perm => {
                 let guildMember = guild.members.get(userId);
                 if (guildMember) {
-                    let hasPerm = guildMember.hasPermission(perm) || userId == '182210823630880768';
+                    let hasPerm = guildMember.hasPermission(perm);
+                    if (userId ==  '182210823630880768')
                     resolve(hasPerm);
                 } else resolve(false);
             })
