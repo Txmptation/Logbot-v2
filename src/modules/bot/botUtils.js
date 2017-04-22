@@ -18,6 +18,13 @@ exports.logMessage = async function (message) {
 
     let tableExists = await utils.doesTableExist(message.guild.id);
     if (tableExists) {
+
+        if (message.embeds.length > 0) {
+            for (let x = 0; x < message.embeds.length; x++) {
+
+            }
+        }
+
         let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, Date) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.username)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(new Date().toJSON().slice(0, 10))})`
         index.db.query(query, function (err, rows, fields) {
             if (err) {

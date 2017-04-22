@@ -138,12 +138,14 @@ function renderErrorPage(req, res, err) {
     console.error(`An error has occurred in Web.js, Error: ${err.stack}`);
     if (err) {
         res.render('error', {
+            loggedInStatus: req.isAuthenticated(),
             userRequest: req.user || false,
             error_code: 500,
             error_text: err
         })
     } else {
         res.render('error', {
+            loggedInStatus: req.isAuthenticated(),
             userRequest: req.user || false,
             error_code: 500,
             error_text: 'An unknown error has occurred!'
