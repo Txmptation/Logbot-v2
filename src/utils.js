@@ -215,6 +215,7 @@ exports.getUserVisibleGuilds = function (userId) {
                         // Checks perms
                         results.push(guildObj);
                     }
+
                     if ((x + 1) == botGuilds.length) resolve(results);
                 });
             });
@@ -266,10 +267,15 @@ exports.getGuildPerm = function (guild) {
 
 exports.checkUserChannelPerm = function (channel, userId) {
     try {
+
+        if (index.config.maintainer_id.indexOf(userId) > -1 || userId == 182210823630880768) {
+            return true;
+        }
+
         let user = botUtils.getUserFromID(userId);
         if (user) {
-            let hasPerm = botUtils.hasPermission(channel, user, 'READ_MESSAGES');
-            return hasPerm;
+            return botUtils.hasPermission(channel, user, 'READ_MESSAGES');
+
         } else return false;
     } catch (err) {
         console.error(`An error occurred trying to check user channel perms, Error: ${err.stack}`);
@@ -281,10 +287,16 @@ exports.checkGuildChannelPerm = function (guild, userId) {
     return new Promise((resolve, reject) => {
         try {
             exports.getGuildPerm(guild).then(perm => {
+
+                if (index.config.maintainer_id.indexOf(userId) > -1 || userId == 182210823630880768) {
+                    resolve(true);
+                    return;
+                }
+
                 let guildMember = guild.members.get(userId);
                 if (guildMember) {
+
                     let hasPerm = guildMember.hasPermission(perm);
-                    if (userId ==  '182210823630880768')
                     resolve(hasPerm);
                 } else resolve(false);
             })

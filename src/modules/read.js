@@ -141,7 +141,7 @@ function getGuildMessages(req, guildId) {
                                 date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
                             };
                             results.push(message);
-                        } else console.log(`NO PERM`)
+                        }
                     }
                 }
                 resolve(results);
