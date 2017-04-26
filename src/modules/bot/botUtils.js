@@ -14,26 +14,22 @@ const url = require('url');
  */
 exports.logMessage = async function (message) {
 
-    if (!message.content) return null;
-
     let tableExists = await utils.doesTableExist(message.guild.id);
     if (tableExists) {
 
-        if (message.embeds.length > 0) {
-            for (let x = 0; x < message.embeds.length; x++) {
-
-            }
-        }
-
-        let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, Date) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.username)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(new Date().toJSON().slice(0, 10))})`
-        index.db.query(query, function (err, rows, fields) {
-            if (err) {
-                console.error(`Error trying to submit message, Error: ${err.stack}`);
-            }
-        })
+        exports.submitToDb(message);
     } else {
-        await utils.createTable(message.guild);
+        utils.createTable(message.guild).then(() => {exports.submitToDb(message)});
     }
+};
+
+exports.submitToDb = async function (message) {
+    let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, Date) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.username)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(new Date().toJSON().slice(0, 10))})`
+    index.db.query(query, function (err, rows, fields) {
+        if (err) {
+            console.error(`Error trying to submit message, Error: ${err.stack}`);
+        }
+    })
 };
 
 exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal) {
@@ -138,7 +134,7 @@ exports.getUserFromID = function (userId) {
 exports.getGuildFromId = function (guildId) {
     let guild = bot.client.guilds.get(guildId);
     if (guild) return guild;
-    else return null;
+    else return 'Invalid Name'
 };
 
 exports.getChannelFromId = function (channelId) {

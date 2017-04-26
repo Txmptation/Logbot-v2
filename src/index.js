@@ -15,6 +15,7 @@ const app = exports.app = express();
 let connection;
 
 const bot = exports.bot = require('./modules/bot/bot');
+const userbot = exports.userbot = require('./modules/bot/userClient');
 const auth = exports.auth = require('./modules/auth');
 const read = exports.read = require('./modules/read');
 const web = exports.web = require('./modules/web');
@@ -54,6 +55,8 @@ try {
     auth(config, app, passport, DiscordS);
     read(app, config);
     web(app, config);
+
+    if (config.userbot_token){userbot.connect(config.userbot_token)}
 
 }catch (err) {
     console.error(`An error occurred during module initialisation, Error: ${err.stack}`);

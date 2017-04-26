@@ -42,7 +42,7 @@ module.exports = function (app, config) {
         let id = req.params.id;
 
         try {
-            let guildChannels = JSON.stringify(utils.getUserVisibleGuildChannels(req.user.id, id)); //TODO check logged in user and replace my id
+            let guildChannels = JSON.stringify(utils.getUserVisibleGuildChannels(req.user.id, id));
 
             res.render('serverMsg', {
                 serverHost: config.host,
