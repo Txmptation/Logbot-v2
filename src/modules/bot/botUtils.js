@@ -80,9 +80,12 @@ exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal)
 exports.cleanMessage = function (message) {
 
     let cleanMsg = message.content;
+    message.embeds.forEach(embed => {
+        cleanMsg += embed.description + ' ';
+    });
 
     message.mentions.users.array().forEach(mention => {
-        cleanMsg.replaceAll(`<${mention.id}>`, mention.username);
+        cleanMsg.replaceAll(`<${mention.id}>`, mention.username).replaceAll(`<@!${mention.id}`, mention.username);
     });
 
     return cleanMsg;
@@ -107,19 +110,19 @@ exports.getSimpleEmbed = function (title, text, colour, isBad = false) {
 
 exports.getColour = function (colourCode) {
 
-    if (colourCode.toLowerCase() == 'red') {
+    if (colourCode.toLowerCase() === 'red') {
         return 0xCC0E0E;
     }
-    else if (colourCode.toLowerCase() == 'blue') {
+    else if (colourCode.toLowerCase() === 'blue') {
         return 0x0988B3;
     }
-    else if (colourCode.toLowerCase() == 'green') {
+    else if (colourCode.toLowerCase() === 'green') {
         return 0x14E01D;
     }
-    else if (colourCode.toLowerCase() == 'orange') {
+    else if (colourCode.toLowerCase() === 'orange') {
         return 0xFF8C00;
     }
-    else if (colourCode.toLowerCase() == 'yellow') {
+    else if (colourCode.toLowerCase() === 'yellow') {
         return 0xFFFF00;
     } else {
         return exports.getRandomColor();
@@ -191,4 +194,4 @@ String.prototype.replaceAll = function (search, replacement) {
 
 String.prototype.capitalizeFirstLetter = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
