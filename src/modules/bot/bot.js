@@ -12,6 +12,8 @@ client.on('ready', () => {
     console.log(`Logbot v2: Connected to ${client.guilds.size} servers, for a total of ${client.channels.size} channels and ${client.users.size} users!`);
     console.log(`The bot is in the following servers: ${client.guilds.array()}`);
 
+    client.user.setGame(index.config.host);
+
     loadCommands();
 });
 
