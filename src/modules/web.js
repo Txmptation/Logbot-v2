@@ -31,6 +31,9 @@ module.exports = function (app, config) {
                     loggedInStatus: req.isAuthenticated(),
                     userRequest: req.user || false
                 })
+            }).catch(err => {
+                console.error(`Unable to fetch visible guilds for the user, Error: ${err.stack}`);
+                renderErrorPage(req, res, err)
             });
 
         } catch (err) {

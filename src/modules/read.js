@@ -138,7 +138,7 @@ function getGuildMessages(req, guildId) {
                                 authorName: rows[x].AuthorName,
                                 authorID: rows[x].AuthorID,
                                 message: rows[x].Message,
-                                date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
+                                date: getDateString(rows[x].Date)
                             };
                             results.push(message);
                         }
@@ -190,7 +190,7 @@ function getAllMessages(req) {
                                         authorName: rows[x].AuthorName,
                                         authorID: rows[x].AuthorID,
                                         message: rows[x].Message,
-                                        date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
+                                        date: getDateString(rows[x].Date)
                                     };
                                     results.push(message);
                                 }
@@ -211,4 +211,8 @@ function getAllMessages(req) {
             reject(err);
         }
     })
+}
+
+function getDateString(date) {
+    return (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 }

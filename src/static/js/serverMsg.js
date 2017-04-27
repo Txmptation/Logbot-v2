@@ -48,6 +48,7 @@ function changeChannelView(channelId) {
 }
 
 function refresh() {
+    //showSpinner();
     loadServerMessages();
     changeChannelView('all');
 
@@ -147,6 +148,7 @@ function createMessage(username, channel, date, message) {
     msg.appendChild(space);
 
     let usernameSpace = document.createElement('td');
+    usernameSpace.setAttribute('style', 'white-space: nowrap; overflow: hidden;');
     let usernameFormatting = document.createElement('b');
     let usernameText = document.createTextNode(username);
     usernameFormatting.appendChild(usernameText);
@@ -154,13 +156,17 @@ function createMessage(username, channel, date, message) {
     msg.appendChild(usernameSpace);
 
     let channelSpace = document.createElement('td');
+    channelSpace.setAttribute('style', 'white-space: nowrap; overflow: hidden;');
     let channelText = document.createTextNode(channel);
     channelSpace.appendChild(channelText);
     msg.appendChild(channelSpace);
 
     let dateSpace = document.createElement('td');
+    dateSpace.setAttribute('style', 'white-space: nowrap; overflow: hidden;');
+    let dateFormatting = document.createElement('i');
     let dateText = document.createTextNode(date);
-    dateSpace.appendChild(dateText);
+    dateFormatting.appendChild(dateText);
+    dateSpace.appendChild(dateFormatting);
     msg.appendChild(dateSpace);
 
     let messageSpace = document.createElement('td');
@@ -182,6 +188,14 @@ function hideBrokenTooltip() {
 
     let notification = document.getElementById('noMessages');
     notification.setAttribute('style', 'display: none');
+}
+
+function showSpinner() {
+    let table = document.getElementById('message_list_table');
+    let spinner = document.getElementById("loadingSpinner");
+
+    table.setAttribute('style', 'display: none');
+    spinner.setAttribute("style", "display: block;");
 }
 
 function hideSpinner() {

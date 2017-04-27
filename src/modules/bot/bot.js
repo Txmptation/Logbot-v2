@@ -32,6 +32,10 @@ client.on('message', msg => {
     }
 });
 
+client.on('messageDelete', msg => {
+    botUtils.onMessageDeleted(msg);
+});
+
 client.on('guildCreate', guild => {
     guild.defaultChannel.sendEmbed(botUtils.getSimpleEmbed('Initial Setup', 'You need to change the default permission to view channels!'));
 });

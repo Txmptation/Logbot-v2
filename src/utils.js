@@ -49,8 +49,10 @@ exports.createTable = function (guild) {
     AuthorID VARCHAR(30),
     AuthorName TEXT,
     Message LONGTEXT,
-    Date DATE,
-    Vip TINYINT
+    MessageID VARCHAR(30),
+    Date DATETIME,
+    Vip TINYINT,
+    Deleted TINYINT
 );`;
 
             index.db.query(query, function (err, rows, fields) {

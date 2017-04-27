@@ -1,6 +1,7 @@
 const index = require('./../../index');
 const utils = require('./../../utils');
 const bot = require('./bot');
+const userbot = require('./userClient');
 const RichEmbed = require('discord.js').RichEmbed;
 
 const fs = require('fs');
@@ -19,15 +20,26 @@ exports.logMessage = async function (message) {
 
         exports.submitToDb(message);
     } else {
-        utils.createTable(message.guild).then(() => {exports.submitToDb(message)});
+        utils.createTable(message.guild).then(() => {
+            exports.submitToDb(message)
+        });
     }
 };
 
 exports.submitToDb = async function (message) {
-    let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, Date) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.username)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(new Date().toJSON().slice(0, 10))})`
+    let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, MessageID, Date, Deleted) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.username)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(message.id)}, ${index.db.escape(new Date())}, ${0})`
     index.db.query(query, function (err, rows, fields) {
         if (err) {
             console.error(`Error trying to submit message, Error: ${err.stack}`);
+        }
+    })
+};
+
+exports.onMessageDeleted = function (message) {
+    let query = `UPDATE id_${message.guild.id} SET Deleted=1 WHERE MessageID=${message.id}`;
+    index.db.query(query, function (err, rows, fields) {
+        if (err) {
+            console.error(`Error trying to set delete status, Error: ${err.stack}`);
         }
     })
 };
@@ -128,48 +140,63 @@ exports.getColour = function (colourCode) {
 
 exports.getUserFromID = function (userId) {
     let user = bot.client.users.get(userId);
+
     if (user) return user;
-    else return null;
+    else if (userbot.selfClient.users.get(userId)) return userbot.selfClient.users.get(userId);
+    else {
+        console.log('Unable to find user from ID!');
+        return null;
+    }
 };
 
 exports.getGuildFromId = function (guildId) {
     let guild = bot.client.guilds.get(guildId);
     if (guild) return guild;
-    else return 'Invalid Name'
+    else if (userbot.selfClient.guilds.get(guildId)) return userbot.selfClient.guilds.get(guildId);
+    else {
+        console.log('Unable to find guild from ID!');
+        return 'Invalid Name'
+    }
 };
 
 exports.getChannelFromId = function (channelId) {
     let channel = bot.client.channels.get(channelId);
     if (channel) return channel;
-    else return null;
+    else if (userbot.selfClient.channels.get(channelId)) return userbot.selfClient.channels.get(channelId);
+    else {
+        console.log('Unable to find channel from ID!');
+        return null;
+    }
 };
 
 exports.getBotGuilds = function () {
-    return Array.from(bot.client.guilds);
+    return Array.from(bot.client.guilds).concat(Array.from(userbot.selfClient.guilds));
 };
 
 
 exports.getGuildMemberCount = function (guildId) {
-    let guild = bot.client.guilds.get(guildId);
-    if (guild) return guild.memberCount;
-    else return null;
+    let guild = exports.getGuildFromId(guildId);
+    if (guild) return guildId.memberCount;
+    else return 0;
 };
 
 exports.getGuildChannels = function (guildId) {
-    let guild = bot.client.guilds.get(guildId);
+
+    let guild = exports.getGuildFromId(guildId);
     let results = [];
 
-    if (!guild) {
+    if (guild) {
+        guild.channels.array().forEach(channel => {
+            if (channel.type === 'text') {
+
+                results.push(channel);
+            }
+        });
+    } else {
         console.error('An error has occurred trying to find guild: ' + guildId);
-        return [];
+        return results;
     }
 
-    guild.channels.array().forEach(channel => {
-        if (channel.type === 'text') {
-
-            results.push(channel);
-        }
-    });
     return results;
 };
 
