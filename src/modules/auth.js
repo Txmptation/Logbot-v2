@@ -34,6 +34,7 @@ module.exports = function (config, app, passport, DiscordS) {
     });
 
     app.get('/login/callback', passport.authenticate('discord', {failureRedirect: '/error'}), (req, res) => {
+        console.log(`- ${req.user.username} has logged on.`);
         if (req.session.redirect === undefined) {
             res.render('error', {
                 discord_server: config.discord_server_name,
