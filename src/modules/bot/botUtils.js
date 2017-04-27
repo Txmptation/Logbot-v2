@@ -81,7 +81,8 @@ exports.cleanMessage = function (message) {
     });
 
     message.mentions.users.array().forEach(mention => {
-        cleanMsg.replaceAll(`<${mention.id}>`, mention.username).replaceAll(`<@!${mention.id}`, mention.username);
+
+        cleanMsg = cleanMsg.replaceAll(`<@!${mention.id}>`, mention.username).replaceAll(`<@${mention.id}>`, mention.username);
     });
 
     return cleanMsg;
