@@ -47,6 +47,12 @@ function changeChannelView(channelId) {
     }
 }
 
+function refresh() {
+    loadServerMessages();
+    changeChannelView('all');
+
+}
+
 function getEntriesToStart(page) {
     return page * entriesPerPage - entriesPerPage;
 }
