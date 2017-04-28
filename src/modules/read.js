@@ -131,16 +131,27 @@ function getGuildMessages(req, guildId) {
                     if (channel) {
                         if (utils.checkUserChannelPerm(channel, req.user.id)) {
 
-                            let message = {
-                                serverID: guildId,
-                                channelID: rows[x].ChannelID,
-                                channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
-                                authorName: rows[x].AuthorName,
-                                authorID: rows[x].AuthorID,
-                                message: rows[x].Message,
-                                date: getDateString(rows[x].Date)
-                            };
-                            results.push(message);
+                            utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
+                                let message = {
+                                    serverId: guildId,
+                                    serverName: rows[x].ServerName,
+                                    channelID: rows[x].ChannelID,
+                                    channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
+                                    authorName: rows[x].AuthorName,
+                                    authorID: rows[x].AuthorID,
+                                    message: rows[x].Message,
+                                    messageID: rows[x].MessageID,
+                                    date: getDateString(rows[x].Date),
+                                    deleted: rows[x].Deleted
+                                };
+
+                                if (hasPerm) {
+
+                                    results.push(message);
+                                } else {
+                                    if (message.deleted === 0) results.push(message);
+                                }
+                            })
                         }
                     }
                 }
@@ -181,18 +192,27 @@ function getAllMessages(req) {
                             if (channel) {
 
                                 if (utils.checkUserChannelPerm(channel, req.user.id)) {
+                                    utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
+                                        let message = {
+                                            serverId: guildId,
+                                            serverName: rows[x].ServerName,
+                                            channelID: rows[x].ChannelID,
+                                            channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
+                                            authorName: rows[x].AuthorName,
+                                            authorID: rows[x].AuthorID,
+                                            message: rows[x].Message,
+                                            messageID: rows[x].MessageID,
+                                            date: getDateString(rows[x].Date),
+                                            deleted: rows[x].Deleted
+                                        };
 
-                                    let message = {
-                                        serverId: guildId,
-                                        serverName: rows[x].ServerName,
-                                        channelID: rows[x].ChannelID,
-                                        channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
-                                        authorName: rows[x].AuthorName,
-                                        authorID: rows[x].AuthorID,
-                                        message: rows[x].Message,
-                                        date: getDateString(rows[x].Date)
-                                    };
-                                    results.push(message);
+                                        if (hasPerm) {
+
+                                            results.push(message);
+                                        } else {
+                                            if (message.deleted === 0) results.push(message);
+                                        }
+                                    })
                                 }
                             }
                         }

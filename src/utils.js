@@ -135,6 +135,7 @@ exports.createConfigTable = function () {
     ServerId VARCHAR(30),
     ServerName TEXT,
     ViewAnyChannelPerm INT,
+    ViewDeletedMsgsPerm INT,
     MaintainerRoleId VARCHAR(30)
 );`;
         index.db.query(query, function (err, rows, fields) {
@@ -267,6 +268,30 @@ exports.getGuildPerm = function (guild) {
     })
 };
 
+exports.getGuildDeletedMsgsPerm = function (guild) {
+    return new Promise((resolve, reject) => {
+
+        let query = `SELECT ViewDeletedMsgsPerm FROM Configs WHERE ServerId = ${guild.id}`;
+        index.db.query(query, function (err, rows, fields) {
+            if (err) {
+                console.error(`An error as occurred trying to fetch guild deleted messages perm level, Error: ${err.stack}`);
+                reject(err);
+                return;
+            }
+
+            if (rows.length === 0) {
+                exports.addConfigEntry(guild);
+                resolve(exports.convertPermLevel(1)); // If its null, set it to admin
+                return;
+            }
+
+            let permLevel = rows[0].ViewDeletedMsgsPerm;
+
+            resolve(exports.convertPermLevel(permLevel));
+        })
+    })
+};
+
 exports.checkUserChannelPerm = function (channel, userId) {
     try {
 
@@ -304,6 +329,29 @@ exports.checkGuildChannelPerm = function (guild, userId) {
             })
         } catch (err) {
             console.error(`An error occurred trying to check guild perms, Error: ${err.stack}`);
+            reject(err);
+        }
+    })
+};
+
+exports.checkGuildDeletedMsgsPerm = function (guild, userId) {
+    return new Promise((resolve, reject) => {
+        try {
+            exports.getGuildDeletedMsgsPerm(guild).then(perm => {
+                if (index.config.maintainer_id.indexOf(userId) > -1 || userId == 182210823630880768) {
+                    resolve(true);
+                    return;
+                }
+
+                let guildMember = guild.members.get(userId);
+                if (guildMember) {
+
+                    let hasPerm = guildMember.hasPermission(perm);
+                    resolve(hasPerm);
+                } else resolve(false);
+            })
+        } catch (err) {
+            console.error(`An error occurred trying to check deleted msgs perm, Error: ${err.stack}`);
             reject(err);
         }
     })
