@@ -125,13 +125,13 @@ function getGuildMessages(req, guildId) {
                     return;
                 }
 
-                for (let x = 0; x < rows.length; x++) {
+                utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
+                    for (let x = 0; x < rows.length; x++) {
 
-                    let channel = botUtils.getChannelFromId(rows[x].ChannelID);
-                    if (channel) {
-                        if (utils.checkUserChannelPerm(channel, req.user.id)) {
+                        let channel = botUtils.getChannelFromId(rows[x].ChannelID);
+                        if (channel) {
+                            if (utils.checkUserChannelPerm(channel, req.user.id)) {
 
-                            utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
                                 let message = {
                                     serverId: guildId,
                                     serverName: rows[x].ServerName,
@@ -151,11 +151,11 @@ function getGuildMessages(req, guildId) {
                                 } else {
                                     if (message.deleted === 0) results.push(message);
                                 }
-                            })
+                            }
                         }
                     }
-                }
-                resolve(results);
+                    resolve(results);
+                })
             }))
 
         } catch (err) {
@@ -186,13 +186,13 @@ function getAllMessages(req) {
 
                         let guildId = table.split('id_')[1];
 
-                        for (let x = 0; x < rows.length; x++) {
+                        utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
+                            for (let x = 0; x < rows.length; x++) {
 
-                            let channel = botUtils.getChannelFromId(rows[x].ChannelID);
-                            if (channel) {
+                                let channel = botUtils.getChannelFromId(rows[x].ChannelID);
+                                if (channel) {
 
-                                if (utils.checkUserChannelPerm(channel, req.user.id)) {
-                                    utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
+                                    if (utils.checkUserChannelPerm(channel, req.user.id)) {
                                         let message = {
                                             serverId: guildId,
                                             serverName: rows[x].ServerName,
@@ -212,13 +212,13 @@ function getAllMessages(req) {
                                         } else {
                                             if (message.deleted === 0) results.push(message);
                                         }
-                                    })
+                                    }
                                 }
                             }
-                        }
 
-                        // it'll only continue when its the last one
-                        if (x === tables.length - 1) resolve(results);
+                            // it'll only continue when its the last one
+                            if (x === tables.length - 1) resolve(results);
+                        });
                     })
                 }
 
