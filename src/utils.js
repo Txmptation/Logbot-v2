@@ -134,8 +134,8 @@ exports.createConfigTable = function () {
     ID INT PRIMARY KEY AUTO_INCREMENT,
     ServerId VARCHAR(30),
     ServerName TEXT,
-    ViewAnyChannelPerm INT,
-    ViewDeletedMsgsPerm INT,
+    ViewAnyChannelPerm INT(11),
+    ViewDeletedMsgsPerm INT(11),
     MaintainerRoleId VARCHAR(30)
 );`;
         index.db.query(query, function (err, rows, fields) {
@@ -271,7 +271,8 @@ exports.getGuildPerm = function (guild) {
 exports.getGuildDeletedMsgsPerm = function (guild) {
     return new Promise((resolve, reject) => {
 
-        let query = `SELECT ViewDeletedMsgsPerm FROM Configs WHERE ServerId = ${guild.id}`;
+        let query = `SELECT ViewDeletedMsgsPerm FROM Configs WHERE ServerId=${guild.id}`;
+
         index.db.query(query, function (err, rows, fields) {
             if (err) {
                 console.error(`An error as occurred trying to fetch guild deleted messages perm level, Error: ${err.stack}`);

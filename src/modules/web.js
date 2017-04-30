@@ -75,12 +75,36 @@ module.exports = function (app, config) {
         }
     });
 
-    app.get('/search', (req, res) => {
+    app.get('/search', checkAuth, (req, res) => {
         try {
-
-
+            utils.getUserVisibleGuilds(req.user.id).then(guilds => {
+                res.render('search', {
+                    loggedInStatus: req.isAuthenticated(),
+                    userRequest: req.user || false,
+                    visibleGuilds: guilds
+                })
+            });
         } catch (err) {
             console.error(`Unable to load search page, Error: ${err.stack}`);
+            renderErrorPage(req, res, err);
+        }
+    });
+
+    app.get('/search/results', checkAuth, (req, res) => {
+        try {
+
+            let results = [];
+
+            let guildSearchsRaw = req.query.searchGuilds;
+            if (guildSearchsRaw) {
+                let guildSearchIds = guildSearchsRaw.split(',');
+                guildSearchIds.forEach(guildId => {
+
+                })
+            }
+
+        } catch (err) {
+            console.error(`Unable to load search results page, Error: ${err.stack}`);
             renderErrorPage(req, res, err);
         }
     });
