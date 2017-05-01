@@ -122,6 +122,7 @@ module.exports = function (app, config) {
                         }
                         if (req.query.authorId && req.query.authorId !== msg.authorID) remove = true;
                         if (req.query.messageId && req.query.messageId !== msg.messageID) remove = true;
+                        if (req.query.channelId && req.query.channelId !== msg.channelID) remove = true;
                         if (req.query.displayDeleted) {
                             if (req.query.displayDeleted === false && msg.deleted !== 0) remove = true;
                         }

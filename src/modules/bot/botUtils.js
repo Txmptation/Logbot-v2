@@ -164,7 +164,6 @@ exports.getChannelFromId = function (channelId) {
     if (channel) return channel;
     else if (userbot.selfClient.channels.get(channelId)) return userbot.selfClient.channels.get(channelId);
     else {
-        console.log('Unable to find channel from ID!');
         return null;
     }
 };
