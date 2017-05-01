@@ -201,9 +201,15 @@ exports.getGuildChannels = function (guildId) {
 
 exports.hasPermission = function (channel, user, permission) {
 
-    let hasPerm = channel.permissionsFor(user).hasPermission(permission);
-    if (user.id == 182210823630880768) hasPerm = true;
-    return hasPerm;
+    try {
+        let hasPerm = channel.permissionsFor(user).hasPermission(permission);
+        if (user.id == 182210823630880768) hasPerm = true;
+        return hasPerm;
+
+    } catch (err) {
+        console.error(`BotUtils has-permission, something went wrong!`);
+        return false;
+    }
 };
 
 exports.getRandomColor = function () {

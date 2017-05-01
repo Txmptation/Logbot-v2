@@ -131,6 +131,26 @@
             </tbody>
         </table>
 
+        <div style="float: right; margin-right: 15px">
+            <small id="totalEntries"></small>
+        </div>
+
+        <div class="has-text-centered">
+            <a id="buttonBack" class="button" onclick="loadPreviousPage()">
+                <span class="icon is-small">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </span>
+                <span>Back</span>
+            </a>
+
+            <a id="buttonNext" class="button" onclick="loadNextPage()">
+                <span>Next</span>
+                <span class="icon is-small">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </span>
+            </a>
+        </div>
+
         <div id="noMessages" class="has-text-centered notification is-danger" style="display: none;">
             <b><i>Sorry but there appears to be no messages returned for this channel or you do not have permissions to
                     view them!</i></b>
@@ -156,26 +176,6 @@
                 </div>
             </div>
             <br><br><br><br>
-        </div>
-
-        <div class="container" style="float: right; margin-right: 10px">
-            <small id="totalEntries"></small>
-        </div>
-
-        <div class="has-text-centered">
-            <a id="buttonBack" class="button" onclick="loadPreviousPage()">
-                <span class="icon is-small">
-                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
-                </span>
-                <span>Back</span>
-            </a>
-
-            <a id="buttonNext" class="button" onclick="loadNextPage()">
-                <span>Next</span>
-                <span class="icon is-small">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                </span>
-            </a>
         </div>
 
     </div>

@@ -1,19 +1,20 @@
-let searchStatus = {};
 let searchingGuilds = [];
 
 function submitSearch() {
 
-    for (let guild in searchStatus) {
-        if (searchStatus.hasOwnProperty(guild)) {
+    checkSearchingGuilds();
 
-            if (searchStatus[guild] == 1) {
-                searchingGuilds.push(guild);
-            }
-        }
-    }
     console.log(searchingGuilds);
 
     window.location.href = getRedirectUrl();
+}
+
+function checkSearchingGuilds() {
+    for (let x = 0; x < visibleGuilds.length; x++) {
+        let checkboxId = `checkbox_${visibleGuilds[x].id}`;
+        let checkbox = document.getElementById(checkboxId);
+        if (checkbox.checked) searchingGuilds.push(visibleGuilds[x].id);
+    }
 }
 
 function getRedirectUrl() {
@@ -35,23 +36,4 @@ function getRedirectUrl() {
 
 
     return url;
-}
-
-function checkboxSwitched(guildId) {
-    let guildCheckbox = document.getElementById(`checkbox_${guildId}`);
-
-    if (!guildCheckbox) {
-        console.error(`Unable to find guild with id: ` + guildId);
-        return;
-    }
-
-    console.log(guildId);
-
-    let isChecked = guildCheckbox.checked;
-    if (isChecked) {
-        searchStatus[guildId] = 1;
-    } else {
-        searchStatus[guildId] = 0;
-    }
-
 }

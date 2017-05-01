@@ -206,7 +206,7 @@ function hideSpinner() {
 
 function updateEntriesNum() {
     let num = document.getElementById('totalEntries');
-    num.innerHTML = `<b><i>${newMessageList.length}</i> total entries!</b>`
+    num.innerHTML = `<b><i>${newMessageList.length}</i> total entries! With <i>${entriesPerPage}</i> per page!</b>`
 }
 
 loadServerMessages();

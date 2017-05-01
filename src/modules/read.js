@@ -112,7 +112,6 @@ function validChannelId(channelId, data) {
 }
 
 function validAuthorId(authorId, data) {
-    //console.log('CHECKING AUTHOR ID : ' + authorId + " vs " + data);
     return authorId === data;
 }
 
@@ -181,8 +180,8 @@ exports.getAllMessages = function (userId) {
             utils.getAllGuildTableNames().then(tables => {
                 let results = [];
 
-                for (let x = 0; x < tables.length; x++) {
-                    let table = tables[x];
+                for (let y = 0; y < tables.length; y++) {
+                    let table = tables[y];
 
                     let query = `SELECT * FROM ${table} ORDER BY id DESC`;
                     index.db.query(query, function (err, rows, fields) {
@@ -225,15 +224,16 @@ exports.getAllMessages = function (userId) {
                             }
 
                             // it'll only continue when its the last one
-                            if (x === tables.length - 1) resolve(results);
+                            if (y === tables.length - 1) resolve(results);
                         }).catch(err => {
+                            console.error(`Unable to fetch all messages, Error: ${err.stack}`);
                             reject(err);
                         });
                     })
                 }
 
             }).catch(err => {
-                console.error(err.stack)
+                console.error(err.stack);
                 reject(err);
             });
 
