@@ -1,6 +1,7 @@
 const requestify = require('requestify');
 const utils = require('./../utils');
 const botUtils = require('./bot/botUtils');
+const read = require('./read');
 const fs = require('fs');
 
 module.exports = function (app, config) {
@@ -93,15 +94,51 @@ module.exports = function (app, config) {
     app.get('/search/results', checkAuth, (req, res) => {
         try {
 
-            let results = [];
-
             let guildSearchsRaw = req.query.searchGuilds;
-            if (guildSearchsRaw) {
-                let guildSearchIds = guildSearchsRaw.split(',');
-                guildSearchIds.forEach(guildId => {
 
-                })
+            if (!guildSearchsRaw) {
+                renderErrorPage(req, res, null, 'Please specify a guild to search for!');
+                return;
             }
+
+            let guildSearchIds = guildSearchsRaw.split(',');
+            let promises = [];
+
+            for (let x = 0; x < guildSearchIds.length; x++) {
+                promises.push(read.getGuildMessages(req.user.id, guildSearchIds[x]));
+            }
+
+            Promise.all(promises).then(messages => {
+                let results = [];
+
+                messages.forEach(msg => {
+                    let remove = false;
+
+                    if (req.query.username && req.query.username !== msg.authorName) remove = true;
+                    if (req.query.authorId && req.query.authorId !== msg.authorID) remove = true;
+                    if (req.query.messageId && req.query.messageId !== msg.messageID) {
+                        console.log(msg);
+                        remove = true;
+                    }
+                    if (req.query.displayDeleted) {
+                        if (req.query.displayDeleted === false && msg.deleted !== 0) remove = true;
+                    }
+
+                    if (!remove) results.push(msg);
+                });
+
+                console.log(JSON.stringify(results));
+
+                res.render('searchRes', {
+                    loggedInStatus: req.isAuthenticated(),
+                    userRequest: req.user || false,
+                    searchResults: results[0]
+                })
+
+            }).catch(err => {
+                console.error(`Unable to load all searched messages, Error: ${err.stack}`);
+                renderErrorPage(req, res, err);
+            });
 
         } catch (err) {
             console.error(`Unable to load search results page, Error: ${err.stack}`);
@@ -160,10 +197,10 @@ function checkAuth(req, res, next) {
     }
 }
 
-function renderErrorPage(req, res, err) {
+function renderErrorPage(req, res, err, errorText) {
 
-    console.error(`An error has occurred in Web.js, Error: ${err.stack}`);
     if (err) {
+        console.error(`An error has occurred in Web.js, Error: ${err.stack}`);
         res.render('error', {
             loggedInStatus: req.isAuthenticated(),
             userRequest: req.user || false,
@@ -175,7 +212,7 @@ function renderErrorPage(req, res, err) {
             loggedInStatus: req.isAuthenticated(),
             userRequest: req.user || false,
             error_code: 500,
-            error_text: 'An unknown error has occurred!'
+            error_text: errorText
         })
     }
 }

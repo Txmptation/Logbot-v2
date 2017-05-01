@@ -29,7 +29,7 @@ module.exports = function (app, config) {
                 utils.doesTableExist(guildId).then(exists => {
                     if (!exists) return res.json({"error": "Sorry but that table doesn't exist"});
 
-                    getGuildMessages(req, guildId).then(messages => {
+                    exports.getGuildMessages(req.user.id, guildId).then(messages => {
 
                         let results = [];
                         messages.forEach(msg => {
@@ -56,7 +56,7 @@ module.exports = function (app, config) {
 
             } else {
 
-                getAllMessages(req).then(messages => {
+                exports.getAllMessages(req.user.id).then(messages => {
                     let results = [];
 
                     messages.forEach(msg => {
@@ -110,7 +110,7 @@ function validAuthorId(authorId, data) {
     return authorId === data;
 }
 
-function getGuildMessages(req, guildId) {
+module.exports.getGuildMessages = function (userId, guildId) {
 
     return new Promise((resolve, reject) => {
         try {
@@ -125,12 +125,12 @@ function getGuildMessages(req, guildId) {
                     return;
                 }
 
-                utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
+                utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), userId).then(hasPerm => {
                     for (let x = 0; x < rows.length; x++) {
 
                         let channel = botUtils.getChannelFromId(rows[x].ChannelID);
                         if (channel) {
-                            if (utils.checkUserChannelPerm(channel, req.user.id)) {
+                            if (utils.checkUserChannelPerm(channel, userId)) {
 
                                 let message = {
                                     serverId: guildId,
@@ -163,9 +163,9 @@ function getGuildMessages(req, guildId) {
             reject(err);
         }
     })
-}
+};
 
-function getAllMessages(req) {
+exports.getAllMessages = function (userId) {
 
     return new Promise((resolve, reject) => {
         try {
@@ -186,13 +186,13 @@ function getAllMessages(req) {
 
                         let guildId = table.split('id_')[1];
 
-                        utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), req.user.id).then(hasPerm => {
+                        utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), userId).then(hasPerm => {
                             for (let x = 0; x < rows.length; x++) {
 
                                 let channel = botUtils.getChannelFromId(rows[x].ChannelID);
                                 if (channel) {
 
-                                    if (utils.checkUserChannelPerm(channel, req.user.id)) {
+                                    if (utils.checkUserChannelPerm(channel, userId)) {
                                         let message = {
                                             serverId: guildId,
                                             serverName: rows[x].ServerName,
@@ -231,7 +231,7 @@ function getAllMessages(req) {
             reject(err);
         }
     })
-}
+};
 
 function getDateString(date) {
     return (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();

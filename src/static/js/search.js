@@ -11,6 +11,7 @@ function submitSearch() {
             }
         }
     }
+    console.log(searchingGuilds);
 
     window.location.href = getRedirectUrl();
 }
@@ -25,7 +26,7 @@ function getRedirectUrl() {
     let url = '/search/results?';
 
     url += `displayDeleted=${displayDeleted}`;
-    if (searchingGuilds.length > 0) url += `searchGuilds=${searchingGuilds}`;
+    if (searchingGuilds.length > 0) url += `&searchGuilds=${searchingGuilds}`;
     if (username) url += `&username=${username}`;
     if (authorId) url += `&authorId=${authorId}&`;
     if (messageId) url += `&messageId=${messageId}&`;
