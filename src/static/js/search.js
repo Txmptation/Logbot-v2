@@ -28,8 +28,8 @@ function getRedirectUrl() {
     url += `displayDeleted=${displayDeleted}`;
     if (searchingGuilds.length > 0) url += `&searchGuilds=${searchingGuilds}`;
     if (username) url += `&username=${username}`;
-    if (authorId) url += `&authorId=${authorId}&`;
-    if (messageId) url += `&messageId=${messageId}&`;
+    if (authorId) url += `&authorId=${authorId}`;
+    if (messageId) url += `&messageId=${messageId}`;
 
 
     return url;

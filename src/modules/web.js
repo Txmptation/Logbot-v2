@@ -111,28 +111,29 @@ module.exports = function (app, config) {
             Promise.all(promises).then(messages => {
                 let results = [];
 
-                messages.forEach(msg => {
-                    let remove = false;
+                messages.forEach(guildMessages => {
 
-                    if (req.query.username && req.query.username !== msg.authorName) remove = true;
-                    if (req.query.authorId && req.query.authorId !== msg.authorID) remove = true;
-                    if (req.query.messageId && req.query.messageId !== msg.messageID) {
-                        console.log(msg);
-                        remove = true;
-                    }
-                    if (req.query.displayDeleted) {
-                        if (req.query.displayDeleted === false && msg.deleted !== 0) remove = true;
-                    }
+                    guildMessages.forEach(msg => {
 
-                    if (!remove) results.push(msg);
+                        let remove = false;
+
+                        if (req.query.username) {
+                            if (!msg.authorName.includes(req.query.username)) remove = true;
+                        }
+                        if (req.query.authorId && req.query.authorId !== msg.authorID) remove = true;
+                        if (req.query.messageId && req.query.messageId !== msg.messageID) remove = true;
+                        if (req.query.displayDeleted) {
+                            if (req.query.displayDeleted === false && msg.deleted !== 0) remove = true;
+                        }
+
+                        if (!remove) results.push(msg);
+                    });
                 });
-
-                console.log(JSON.stringify(results));
 
                 res.render('searchRes', {
                     loggedInStatus: req.isAuthenticated(),
                     userRequest: req.user || false,
-                    searchResults: results[0]
+                    searchResults: results
                 })
 
             }).catch(err => {

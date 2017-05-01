@@ -72,7 +72,7 @@ exports.createTable = function (guild) {
 
 exports.addConfigEntry = function (guild) {
     return new Promise((resolve, reject) => {
-        let configQuery = `INSERT INTO Configs (ServerId, ServerName, ViewAnyChannelPerm, MaintainerRoleId) VALUES (${guild.id}, ${index.db.escape(guild.name)}, 1, ${guild.ownerID})`;
+        let configQuery = `INSERT INTO Configs (ServerId, ServerName, ViewAnyChannelPerm, ViewDeletedMsgsPerm, MaintainerRoleId) VALUES (${guild.id}, ${index.db.escape(guild.name)}, 1, 1, ${guild.ownerID})`;
 
         index.db.query(configQuery, function (err, rows, fields) {
             if (err) {
@@ -276,6 +276,7 @@ exports.getGuildDeletedMsgsPerm = function (guild) {
         index.db.query(query, function (err, rows, fields) {
             if (err) {
                 console.error(`An error as occurred trying to fetch guild deleted messages perm level, Error: ${err.stack}`);
+                console.log(`Error query: ${query}`);
                 reject(err);
                 return;
             }

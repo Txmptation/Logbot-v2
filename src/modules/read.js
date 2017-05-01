@@ -165,7 +165,7 @@ module.exports.getGuildMessages = function (userId, guildId) {
     })
 };
 
-exports.getAllMessages = function (userId) {
+module.exports.getAllMessages = function (userId) {
 
     return new Promise((resolve, reject) => {
         try {
