@@ -53,7 +53,7 @@ try {
 try {
     bot.connect();
     auth(config, app, passport, DiscordS);
-    read(app, config);
+    read.init(app, config);
     web(app, config);
 
     if (config.userbot_token){userbot.connect(config.userbot_token)}

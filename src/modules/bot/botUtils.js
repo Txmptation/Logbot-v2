@@ -155,7 +155,7 @@ exports.getGuildFromId = function (guildId) {
     else if (userbot.selfClient.guilds.get(guildId)) return userbot.selfClient.guilds.get(guildId);
     else {
         console.log('Unable to find guild from ID!');
-        return 'Invalid Name'
+        return null;
     }
 };
 

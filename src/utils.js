@@ -199,7 +199,7 @@ exports.getUserVisibleGuilds = function (userId) {
         let results = [];
         let botGuilds = botUtils.getBotGuilds();
 
-        for (let x = 0; x < botGuilds.length; x++) {
+        for (let x = 0; x < botGuilds.length; x++) { //TODO fix with promise.all
             let guild = botGuilds[x][1];
 
             exports.doesTableExist(guild.id).then(exists => {
@@ -315,6 +315,8 @@ exports.checkUserChannelPerm = function (channel, userId) {
 exports.checkGuildChannelPerm = function (guild, userId) {
     return new Promise((resolve, reject) => {
         try {
+            if (!guild) reject();
+
             exports.getGuildPerm(guild).then(perm => {
 
                 if (index.config.maintainer_id.indexOf(userId) > -1 || userId == 182210823630880768) {
@@ -339,6 +341,8 @@ exports.checkGuildChannelPerm = function (guild, userId) {
 exports.checkGuildDeletedMsgsPerm = function (guild, userId) {
     return new Promise((resolve, reject) => {
         try {
+            if (!guild) reject();
+
             exports.getGuildDeletedMsgsPerm(guild).then(perm => {
                 if (index.config.maintainer_id.indexOf(userId) > -1 || userId == 182210823630880768) {
                     resolve(true);

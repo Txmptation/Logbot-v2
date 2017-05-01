@@ -2,7 +2,7 @@ const index = require('./../index');
 const utils = require('./../utils');
 const botUtils = require('./bot/botUtils');
 
-module.exports = function (app, config) {
+exports.init = function (app, config) {
 
     app.get('/api/read', ((req, res) => {
 
@@ -80,24 +80,30 @@ module.exports = function (app, config) {
                 })
             }
         } catch (err) {
-            console.error(`Error sorting out messages, Error: ${err.stack}`)
+            console.error(`Error sorting out messages, Error: ${err.stack}`);
+            res.status(404).json({"error": "An unknown error has occurred, contact @XeliteXirish"});
         }
     }));
 };
 
 function sendResponse(req, res, messages, countMessages) {
 
-    if (messages.length > 0) {
+    try {
+        if (messages.length > 0) {
 
-        if (countMessages) {
-            res.json({"messages": messages.length});
-            return;
+            if (countMessages) {
+                res.json({"messages": messages.length});
+                return;
+            }
+
+            res.status(200).json(messages);
+
+        } else {
+            res.json({"null": "No results found for that request!"});
         }
-
-        res.status(200).json(messages);
-
-    } else {
-        res.json({"null": "No results found for that request!"});
+    } catch (err) {
+        console.error(`Unable to send response to user, Error: ${err.stack}`);
+        res.status(404).json({"error": "An unknown error has occurred, contact @XeliteXirish"});
     }
 }
 
@@ -110,7 +116,7 @@ function validAuthorId(authorId, data) {
     return authorId === data;
 }
 
-module.exports.getGuildMessages = function (userId, guildId) {
+exports.getGuildMessages = function (userId, guildId) {
 
     return new Promise((resolve, reject) => {
         try {
@@ -155,6 +161,8 @@ module.exports.getGuildMessages = function (userId, guildId) {
                         }
                     }
                     resolve(results);
+                }).catch(err => {
+                    reject(err);
                 })
             }))
 
@@ -165,7 +173,7 @@ module.exports.getGuildMessages = function (userId, guildId) {
     })
 };
 
-module.exports.getAllMessages = function (userId) {
+exports.getAllMessages = function (userId) {
 
     return new Promise((resolve, reject) => {
         try {
@@ -218,12 +226,15 @@ module.exports.getAllMessages = function (userId) {
 
                             // it'll only continue when its the last one
                             if (x === tables.length - 1) resolve(results);
+                        }).catch(err => {
+                            reject(err);
                         });
                     })
                 }
 
             }).catch(err => {
                 console.error(err.stack)
+                reject(err);
             });
 
         } catch (err) {
