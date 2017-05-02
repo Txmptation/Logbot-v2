@@ -52,32 +52,15 @@ exports.init = function (app, config) {
                         res.status(404).json({"error": "An unknown error has occurred, contact @XeliteXirish"});
                         console.error(err.stack);
                     });
+                }).catch(err => {
+                    res.status(404).json({"error": "An unknown error has occurred, contact @XeliteXirish"});
+                    console.error(err.stack);
                 });
 
             } else {
 
-                exports.getAllMessages(req.user.id).then(messages => {
-                    let results = [];
+                res.json({"error": "You must specify a guild to search for, using serverid as a query!"})
 
-                    messages.forEach(msg => {
-                        let removeMsg = false;
-
-                        if (checkChannelId) {
-                            if (!validChannelId(req.query.channelid, msg.channelID)) removeMsg = true;
-                        }
-
-                        if (checkAuthorId) {
-                            if (!validAuthorId(req.query.authorid, msg.authorID)) removeMsg = true;
-                        }
-
-                        if (!removeMsg) results.push(msg);
-                    });
-
-                    sendResponse(req, res, results, countMessages);
-                }).catch(err => {
-                    res.status(404).json({"error": "An unknown error has occurred, contact @XeliteXirish"});
-                    console.error(err.stack);
-                })
             }
         } catch (err) {
             console.error(`Error sorting out messages, Error: ${err.stack}`);
@@ -116,120 +99,61 @@ function validAuthorId(authorId, data) {
     return authorId === data;
 }
 
-exports.getGuildMessages = async function (userId, guildId) {
+exports.getGuildMessages = function (userId, guildId) {
 
-    try {
+    return new Promise((resolve, reject) => {
+        try {
 
-        let results = [];
-        let query = `SELECT * FROM id_${guildId} ORDER BY id DESC`;
+            let results = [];
+            let query = `SELECT * FROM id_${guildId} ORDER BY ID DESC`;
 
-        index.db.query(query, async function (err, rows, fields) {
-            if (err) {
-                console.error(`An error occurred when reading messages, Error: ${err.stack}`);
-                reject(err);
-                return;
-            }
-
-            let hasPerm = await utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), userId);
-
-            for (let x = 0; x < rows.length; x++) {
-
-                let channel = botUtils.getChannelFromId(rows[x].ChannelID);
-                if (channel) {
-                    if (utils.checkUserChannelPerm(channel, userId)) {
-
-                        let message = {
-                            serverId: guildId,
-                            serverName: rows[x].ServerName,
-                            channelID: rows[x].ChannelID,
-                            channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
-                            authorName: rows[x].AuthorName,
-                            authorID: rows[x].AuthorID,
-                            message: rows[x].Message,
-                            messageID: rows[x].MessageID,
-                            date: getDateString(rows[x].Date),
-                            deleted: rows[x].Deleted
-                        };
-
-                        if (hasPerm) {
-
-                            results.push(message);
-                        } else {
-                            if (message.deleted === 0) results.push(message);
-                        }
-                    }
-                }
-            }
-            return results;
-        });
-
-    } catch (err) {
-        console.error(`An error occurred when receiving guild messages, Error: ${err.stack}`);
-        reject(err);
-    }
-};
-
-exports.getAllMessages = async function (userId) {
-
-    try {
-
-        let tableNames = await utils.getAllGuildTableNames();
-        let results = [];
-        let counter = 0;
-
-
-        tableNames.forEach(table => {
-
-            let query = `SELECT * FROM ${table} ORDER BY id DESC`;
-
-            index.db.query(query, async function (err, rows, fields) {
+            index.db.query(query, ((err, rows, fields) => {
                 if (err) {
                     console.error(`An error occurred when reading messages, Error: ${err.stack}`);
                     reject(err);
                     return;
                 }
 
-                let guildId = table.split('id_')[1];
+                utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), userId).then(hasPerm => {
+                    for (let x = 0; x < rows.length; x++) {
 
-                let hasPerm = await utils.checkGuildDeletedMsgsPerm(botUtils.getGuildFromId(guildId), userId);
+                        let channel = botUtils.getChannelFromId(rows[x].ChannelID);
+                        if (channel) {
+                            if (utils.checkUserChannelPerm(channel, userId)) {
 
-                for (let x = 0; x < rows.length; x++) {
+                                let message = {
+                                    serverId: guildId,
+                                    serverName: rows[x].ServerName,
+                                    channelID: rows[x].ChannelID,
+                                    channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
+                                    authorName: rows[x].AuthorName,
+                                    authorID: rows[x].AuthorID,
+                                    message: rows[x].Message,
+                                    messageID: rows[x].MessageID,
+                                    date: getDateString(rows[x].Date),
+                                    deleted: rows[x].Deleted
+                                };
 
-                    let channel = botUtils.getChannelFromId(rows[x].ChannelID);
-                    if (channel) {
+                                if (hasPerm) {
 
-                        if (utils.checkUserChannelPerm(channel, userId)) {
-                            let message = {
-                                serverId: guildId,
-                                serverName: rows[x].ServerName,
-                                channelID: rows[x].ChannelID,
-                                channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
-                                authorName: rows[x].AuthorName,
-                                authorID: rows[x].AuthorID,
-                                message: rows[x].Message,
-                                messageID: rows[x].MessageID,
-                                date: getDateString(rows[x].Date),
-                                deleted: rows[x].Deleted
-                            };
-
-                            if (hasPerm) {
-
-                                results.push(message);
-                            } else {
-                                if (message.deleted === 0) results.push(message);
+                                    results.push(message);
+                                } else {
+                                    if (message.deleted === 0) results.push(message);
+                                }
                             }
                         }
                     }
-                }
-            });
-            counter++;
-            if (counter === (tableNames.length - 1)) return results;
-        });
+                    resolve(results);
+                }).catch(err => {
+                    reject(err);
+                })
+            }))
 
-    } catch (err) {
-        console.error(`Error trying to receive all messages, Error: ${err.stack}`);
-        reject(err);
-    }
+        } catch (err) {
+            console.error(`An error occurred when receiving guild messages, Error: ${err.stack}`);
+            reject(err);
+        }
+    })
 };
 
 function getDateString(date) {

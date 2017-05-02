@@ -1,7 +1,7 @@
 {
   "server_ip": "138.68.143.177",
-  "server_port": "80",
-  "host": "http://logbot.shaunoneill.com:80",
+  "server_port": "801",
+  "host": "http://localhost:801",
   "botToken": "MjM1MTc1MTcyNzA4MTA2MjQw.C9KKtw._4CPQODW0Lbkey_ObnGYWMrgni0",
   "userbot_token": "MzA3MjU1MDUxNjY2MDYzMzYy.C-Pqlg.1M8QFi5FtPCd28zpIbZbxKIqKX4",
   "prefix": "#!",
@@ -18,5 +18,6 @@
   "addBotUrl": "https://discordapp.com/oauth2/authorize?client_id=235175172708106240&scope=bot&permissions=8",
   "default_message_search": 50,
   "entriesPerPage": 50,
-  "msg_delete_time": 20000
+  "msg_delete_time": 20000,
+  "max_timeout": 50000
 }

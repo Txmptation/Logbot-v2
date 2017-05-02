@@ -154,7 +154,7 @@ exports.getGuildFromId = function (guildId) {
     if (guild) return guild;
     else if (userbot.selfClient.guilds.get(guildId)) return userbot.selfClient.guilds.get(guildId);
     else {
-        console.log('Unable to find guild from ID!');
+        console.log('Unable to find guild from ID: ' + guildId);
         return null;
     }
 };
