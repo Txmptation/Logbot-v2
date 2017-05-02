@@ -74,7 +74,7 @@
     </div>
 </section>
 
-<section class="hero is-info is-small">
+<section class="hero is-info is-small is-bold">
     <div class="hero-body">
         <div class="container">
             <nav class="columns">
@@ -83,7 +83,13 @@
                         <i class="fa fa-code"></i>
                     </span>
                     <p class="title is-4">Keep track of your members!</p>
-                    <p class="subtitle">Log all their messages that the bot can see!</p>
+                </div>
+
+                <div class="column has-text-centered">
+                    <span class="icon is-large">
+                        <i class="fa fa-code"></i>
+                    </span>
+                    <p class="title is-4">Easy to configure everything!</p>
                 </div>
 
                 <div class="column has-text-centered">
@@ -91,15 +97,131 @@
                         <i class="fa fa-code"></i>
                     </span>
                     <p class="title is-4">Automatically sorted messages!</p>
-                    <p class="subtitle">Sort through all servers you're in easily!</p>
                 </div>
             </nav>
         </div>
     </div>
 </section>
 
-<section id="about" class="section is-white">
+<section class="hero is-light is-bold is-medium">
+    <div class="hero-body">
+        <div class="container">
+            <div class="tile is-ancestor">
+                <div class="tile is-vertical is-8">
+                    <div class="tile is-parent">
+                        <div class="tile is-child">
+                            <p class="title is-2">Increase <strong>moderation</strong> activity on all servers!</p>
+                            <p class="subtitle is-4">This bot provides an easier medium for moderators to moderate
+                                chats.</p>
+                            <p>
+                                No matter how many people your discord server has, LogBot will make sure it records
+                                everything. No more will you have to rely on screenshots to view deleted message
+                                conversations!
+                                <br>
+                                <small style="float: right">Nothing is ever deleted...</small>
+                            </p>
+                        </div>
+                    </div>
 
+                    <div class="tile">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="hero is-primary is-bold is-small">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <p class="title"><strong>~ Bot Information ~</strong></p>
+            <br>
+
+            <nav class="columns">
+                <div class="column">
+                    <p class="heading"><strong>Total Server<%= rawServerCount == 1 ? "" : "s" %></strong></p>
+                    <p class="title is-2"><%= rawServerCount %></p>
+                </div>
+
+                <div class="column">
+                    <p class="heading"><strong>Total User<%= rawUserCount == 1 ? "" : "s" %></strong></p>
+                    <p class="title is-2"><%= rawUserCount %></p>
+                </div>
+
+                <div class="column" title="<%= rawUptime %>">
+                    <p class="heading"><strong>Instance Uptime</strong></p>
+                    <p class="title is-2"><%= roundedUptime %></p>
+                </div>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<section class="hero is-light is-bold is-medium">
+    <div class="hero-body">
+        <div class="container">
+            <div class="has-text-centered">
+                <h2 class="title is-2"><strong>~ The Authors ~</strong></h2>
+                <h4 class="subtitle is-4"><i>Even those who helped out in version one!</i></h4>
+            </div>
+            <br><br>
+
+            <div class="columns">
+                <div class="column">
+                    <center>
+                        <div class="card" style="text-align: center; width: 500px;">
+                            <div class="card-image">
+                                <figure class="image is-square">
+                                    <img src="https://www.shaunoneill.com/assets/logo.png">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-content">
+                                        <p class="title is-3">&bull;&nbsp;XeliteXirish</p>
+                                        <p class="subtitle is-5">Original creator and maintainer!</p>
+                                    </div>
+                                </div>
+                                <div class="content">
+                                    <br>
+                                    <a href="https://www.shaunoneill.com">Website</a> - <a
+                                            href="https://www.github.com/XeliteXirish">Github</a> - <a
+                                            href="https://www.twitter.com/XeliteXirish">Twitter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </center>
+                </div>
+
+                <div class="column">
+                    <center>
+                        <div class="card" style="text-align: center; width: 500px;">
+                            <div class="card-image">
+                                <figure class="image is-square">
+                                    <img src="https://www.shaunoneill.com/assets/logo.png">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-content">
+                                        <p class="title is-3">&bull;&nbsp;King Vlad</p>
+                                        <p class="subtitle is-5">Version one utility programmer!</p>
+                                    </div>
+                                </div>
+                                <div class="content">
+                                    <br>
+                                    <a href="https://www.shaunoneill.com">Website</a> - <a
+                                            href="https://www.github.com/XeliteXirish">Github</a> - <a
+                                            href="https://www.twitter.com/XeliteXirish">Twitter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <%- include partials/footer.ejs %>

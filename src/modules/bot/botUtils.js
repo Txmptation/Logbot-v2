@@ -199,6 +199,14 @@ exports.getGuildChannels = function (guildId) {
     return results;
 };
 
+exports.getTotalUsers = function () {
+    return bot.client.users.size + userbot.selfClient.users.size;
+};
+
+exports.getTotalGuilds = function () {
+    return bot.client.guilds.size + userbot.selfClient.guilds.size;
+};
+
 exports.hasPermission = function (channel, user, permission) {
 
     try {
