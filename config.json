@@ -19,5 +19,5 @@
   "default_message_search": 50,
   "entriesPerPage": 50,
   "msg_delete_time": 20000,
-  "max_timeout": 50000
+  "max_send_messages": 150000
 }

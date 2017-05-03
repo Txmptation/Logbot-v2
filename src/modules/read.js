@@ -114,6 +114,7 @@ exports.getGuildMessages = function (userId, guildId) {
 
             let results = [];
             let query = `SELECT * FROM id_${guildId} ORDER BY ID DESC`;
+            if (!index.config.maintainer_id.indexOf(userId) > -1) query += ` LIMIT ${index.config.max_send_messages}`;
 
             index.db.query(query, ((err, rows, fields) => {
                 if (err) {

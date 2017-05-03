@@ -197,13 +197,28 @@ exports.getUserVisibleGuilds = function (userId) {
     return new Promise((resolve, reject) => {
 
         let results = [];
+        let tablePromises = [];
+        let channelPermPromises = [];
+
         let botGuilds = botUtils.getBotGuilds();
 
         for (let x = 0; x < botGuilds.length; x++) { //TODO fix with promise.all
             let guild = botGuilds[x][1];
 
-            exports.doesTableExist(guild.id).then(exists => {
-                exports.checkGuildChannelPerm(guild, userId).then(allowed => {
+            tablePromises.push(exports.doesTableExist(guild.id));
+            channelPermPromises.push(exports.checkGuildChannelPerm(guild, userId));
+
+        }
+
+        Promise.all(tablePromises).then(tableExists => {
+            Promise.all(channelPermPromises).then(allowed => {
+
+                for (let y = 0; y < botGuilds.length; x++) {
+
+                    let guild = botGuilds[x][1];
+                    let exists = tableExists[y];
+                    let allowed = allowed[y];
+
                     if (exists && allowed) {
 
                         let guildObj = {
@@ -214,15 +229,17 @@ exports.getUserVisibleGuilds = function (userId) {
                             region: guild.region
                         };
 
-
                         // Checks perms
                         results.push(guildObj);
                     }
-
-                    if ((x + 1) == botGuilds.length) resolve(results);
-                });
-            });
-        }
+                }
+                resolve(results);
+            }).catch(err => {
+                reject(err)
+            })
+        }).catch(err => {
+            reject(err)
+        })
     });
 };
 
