@@ -154,6 +154,22 @@ module.exports = function (app, config) {
         }
     });
 
+    app.get('/blog', (req, res) => { //TODO fix the url that is passed
+
+        try {
+
+            res.render('blog', {
+                loggedInStatus: req.isAuthenticated(),
+                userRequest: req.user || false
+            })
+
+        } catch (err) {
+            console.error(`Unable to load blog page, Error: ${err.stack}`);
+            renderErrorPage(req, res, err);
+        }
+
+    });
+
     // Error
     app.get("/error", (req, res) => {
         try {

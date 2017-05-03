@@ -14,8 +14,7 @@ function loadServerMessages() {
 
             serverMessages = JSON.parse(xhrRequest.responseText);
             newMessageList = serverMessages;
-            maxPages = Math.floor(serverMessages.length / entriesPerPage) + 1
-            console.log('LOADING')
+            maxPages = Math.floor(serverMessages.length / entriesPerPage) + 1;
             loadDefaultPage();
         }
     };

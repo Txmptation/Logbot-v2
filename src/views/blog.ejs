@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Error &bull; Logbot</title>
+    <title>Blog &bull; Logbot</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.1/css/bulma.min.css">
     <script src="https://use.fontawesome.com/337fb33ac6.js"></script>
-    <link rel="stylesheet" href="/css/serverMsg.css">
-    <link rel="stylesheet" href="/css/loading.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=201610241153">
     <link rel="icon" type="image/png" href="/favicon-32x32.png?v=201610241153" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-16x16.png?v=201610241153" sizes="16x16">
@@ -23,11 +21,8 @@
 </head>
 
 <body>
-<script>
-    var isLoggedIn = "<%= loggedInStatus %>"
-</script>
 
-<section id="hero_section" class="hero is-danger is-medium">
+<section id="hero_section" class="hero is-dark is-medium">
     <div class="hero-head">
         <nav class="nav has-shadow">
             <div class="container">
@@ -49,9 +44,9 @@
 
                 <div class="nav-right nav-menu">
                     <a class="nav-item" href="/">Home</a>
-                    <a class="nav-item is-active" href="/servers">Servers</a>
+                    <a class="nav-item" href="/servers">Servers</a>
                     <a class="nav-item" href="/search">Search</a>
-                    <a class="nav-item" href="/blog">Blog</a>
+                    <a class="nav-item is-active" href="/blog">Blog</a>
 
                     <p class="nav-item control has-addons">
                         <a class="button is-info is-outlines" href="/add">
@@ -70,28 +65,45 @@
 
     <div class="hero-body">
         <div class="container has-text-centered">
-            <h1 class="title is-1">~ Error <%= error_code %> ~
+            <h1 class="title is-1">
+                Logbot v2
             </h1>
-            <br>
             <h2 class="subtitle is-4">
-                Snap, something hit a snag. :/
+                <span>Keep track of what all you're users are doing on other servers!</span>
             </h2>
         </div>
     </div>
 </section>
 
-<section class="section">
-    <div class="container box has-text-centered ">
-        <h5 class="subtitle is-5 paragraph">
-            <%= error_code %>, let's talk about that.
-        </h5>
-        <br>
-        <p class="paragraph">
-            <%= error_text %>
-        </p>
+<section class="hero" id="portfolio">
+    <div class="hero-body">
+        <div class="container">
+
+            <div class="heading">
+                <h1 class="title">
+                    &bull;&nbsp;Blog Posts
+                </h1>
+                <h2 class="subtitle">
+                    Find updates involving Logbot here!
+                </h2>
+                <p style="float: right">
+                    <small><strong><i>Automatically updated!</i></strong></small>
+                </p>
+            </div>
+
+            <hr>
+            <br>
+
+            <div id="blog_posts_box" class="column">
+
+            </div>
+        </div>
     </div>
 </section>
+
+<script src="/js/blog.js"></script>
 
 <%- include partials/footer.ejs %>
 
 </body>
+</html>
