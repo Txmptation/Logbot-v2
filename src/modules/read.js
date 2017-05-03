@@ -2,7 +2,15 @@ const index = require('./../index');
 const utils = require('./../utils');
 const botUtils = require('./bot/botUtils');
 
+const RateLimit = require("express-rate-limit");
+
 exports.init = function (app, config) {
+
+    app.use('/api/', new RateLimit({
+        windowMs: 3600000,	// 150 requests/per hr
+        max: 150,
+        delayMs: 0
+    }));
 
     app.get('/api/read', ((req, res) => {
 
