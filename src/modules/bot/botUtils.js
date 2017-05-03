@@ -27,7 +27,7 @@ exports.logMessage = async function (message) {
 };
 
 exports.submitToDb = async function (message) {
-    let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, MessageID, Date, Deleted) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.username)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(message.id)}, ${index.db.escape(new Date())}, ${0})`
+    let query = `INSERT INTO id_${message.guild.id} (ServerName, ChannelID, ChannelName, AuthorID, AuthorName, Message, MessageID, Date, Deleted) VALUES (${index.db.escape(message.guild.name)}, ${message.channel.id}, ${index.db.escape(message.channel.name)}, ${message.author.id}, ${index.db.escape(message.author.tag)}, ${index.db.escape(exports.cleanMessage(message))}, ${index.db.escape(message.id)}, ${index.db.escape(new Date())}, ${0})`
     index.db.query(query, function (err, rows, fields) {
         if (err) {
             console.error(`Error trying to submit message, Error: ${err.stack}`);
