@@ -211,13 +211,13 @@ exports.getUserVisibleGuilds = function (userId) {
         }
 
         Promise.all(tablePromises).then(tableExists => {
-            Promise.all(channelPermPromises).then(allowed => {
+            Promise.all(channelPermPromises).then(allowedPerm => {
 
                 for (let y = 0; y < botGuilds.length; x++) {
 
                     let guild = botGuilds[y][1];
                     let exists = tableExists[y];
-                    let allowed = allowed[y];
+                    let allowed = allowedPerm[y];
 
                     if (exists && allowed) {
 
