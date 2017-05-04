@@ -215,7 +215,7 @@ exports.getUserVisibleGuilds = function (userId) {
 
                 for (let y = 0; y < botGuilds.length; x++) {
 
-                    let guild = botGuilds[x][1];
+                    let guild = botGuilds[y][1];
                     let exists = tableExists[y];
                     let allowed = allowed[y];
 
