@@ -126,7 +126,9 @@ module.exports = function (app, config) {
                         if (req.query.username) {
                             if (!msg.authorName.toLowerCase().includes(req.query.username.toLowerCase())) remove = true;
                         }
-                        if (req.query.message && !req.query.message.toLowerCase().includes(msg.message.toLowerCase())) remove = true;
+                        if (req.query.message) {
+                            if (!msg.message || !req.query.message.toLowerCase().includes(msg.message.toLowerCase())) remove = true;
+                        }
                         if (req.query.authorId && req.query.authorId !== msg.authorID) remove = true;
                         if (req.query.messageId && req.query.messageId !== msg.messageID) remove = true;
                         if (req.query.channelId && req.query.channelId !== msg.channelID) remove = true;
