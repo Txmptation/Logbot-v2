@@ -85,6 +85,13 @@
         <div class="header">
             <h1 class="title">
                 <strong>&bull;Bot Guilds:</strong>
+                <div style="float: right;">
+                    <p class="control has-addons">
+                        <input id="input_search_guild" onkeyup="searchGuildTable()" class="input" type="search"
+                               placeholder="Search guilds..">
+                        <a class="button is-info" onclick="searchGuildTable()">Search</a>
+                    </p>
+                </div>
             </h1>
             <h2 class="subtitle">
                 These are the guilds that you have permissions to view message logs for!
@@ -94,15 +101,6 @@
         <br><br>
 
         <div class="has-text-centered box">
-
-            <div style="float: right;">
-                <p class="control has-addons">
-                    <input id="input_search_guild" onkeyup="searchGuildTable()" class="input" type="search"
-                           placeholder="Search guilds..">
-                    <a class="button is-info" onclick="searchGuildTable()">Search</a>
-                </p>
-            </div>
-            <br><br>
 
             <table class="table is-stripped">
                 <thead>
