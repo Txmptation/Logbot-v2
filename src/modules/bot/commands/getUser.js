@@ -57,7 +57,7 @@ function runUserSearch(msg, searchUser) {
     let guild = msg.guild;
 
     let embed = utils.getSimpleEmbed('Search Results', `Here are the log results for ${searchUser.tag}`, utils.getRandomColor());
-    embed.addField('\u200b', '\u200b', true);
+    embed.addField('\u200b', '\u200b');
     embed.addField('Results', `[CLICK HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&authorId=${searchUser.id})`, true);
 
     msg.channel.send({embed})
@@ -67,7 +67,7 @@ function runChannelSearch(msg, channel) {
     let guild = msg.guild;
 
     let embed = utils.getSimpleEmbed('Search Results', `Here are the log results for ${channel.name}`, utils.getRandomColor());
-    embed.addField('\u200b', '\u200b', true);
+    embed.addField('\u200b', '\u200b');
     embed.addField('Results', `[CLICK HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&channelid=${channel.id})`, true);
 
     msg.channel.send({embed})
