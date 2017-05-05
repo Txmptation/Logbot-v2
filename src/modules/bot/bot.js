@@ -22,6 +22,7 @@ client.on('message', msg => {
     let command = msg.content.split(' ')[1];
 
     botUtils.logMessage(msg);
+
     if (commands[command]){
         try {
             commands[command].run(client, msg, args);

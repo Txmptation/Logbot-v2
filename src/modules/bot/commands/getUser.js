@@ -3,7 +3,7 @@ const utils = require('../botUtils');
 
 exports.info = {
     name: 'search',
-    usage: 'user [member | user ID] | channel [channel | channel ID]',
+    usage: 'search [member | user ID] | channel [channel | channel ID]',
     description: 'Retrieves an amount of messages for that user / channel!'
 };
 
