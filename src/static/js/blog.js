@@ -24,7 +24,7 @@ function writeBlogPosts() {
 function loadPosts() {
     var parent = document.getElementById('blog_posts_box');
 
-    for (var x = 0; x < blogPosts.length; x++) {
+    for (var x = blogPosts.length; x > 0; x--) {
 
         var title = blogPosts[x].post_title;
         var author_url = blogPosts[x].author_url;
