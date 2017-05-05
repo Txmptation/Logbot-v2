@@ -15,6 +15,7 @@ const getHelp = function (bot, command) {
 
 exports.run = function (bot, msg, args) {
     if (!args.length > 0) {
+        console.log(`Running args ${args}`)
         const embed = utils.getSimpleEmbed("Help", "All available commands for LogBot", utils.getColour('red'));
 
         for (const cmd in bot.commands) {

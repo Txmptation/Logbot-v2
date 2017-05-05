@@ -5,6 +5,7 @@ const index = require('./../../index');
 const client = exports.client = new Discord.Client();
 const botUtils = require('./botUtils');
 
+const config = exports.config = client.config = index.config;
 const commands = exports.commands = client.commands = {};
 
 client.on('ready', () => {
