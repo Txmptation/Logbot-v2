@@ -45,11 +45,6 @@ try {
         keys: [config.clientID, config.session_secret],
         maxAge: 48 * 60 * 60 * 1000 // 48 hours
     }));
-    /*app.use(session({
-        secret: config.session_secret,
-        resave: true,
-        saveUninitialized: false
-     }));*/
 
     utils.createConfigTable();
 
