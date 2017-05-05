@@ -157,7 +157,7 @@ module.exports = function (app, config) {
         }
     });
 
-    app.get('/blog', (req, res) => { //TODO fix the url that is passed
+    app.get('/blog', (req, res) => {
 
         try {
 

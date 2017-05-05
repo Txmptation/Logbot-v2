@@ -4,7 +4,7 @@ function writeBlogPosts() {
 
     var xhrBlogPosts = new XMLHttpRequest();
     xhrBlogPosts.overrideMimeType("application/json");
-    xhrBlogPosts.open('GET', './blog_posts.json');
+    xhrBlogPosts.open('GET', 'https://raw.githubusercontent.com/XeliteXirish/Logbot-v2/master/src/static/blog_posts.json');
     xhrBlogPosts.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
 
