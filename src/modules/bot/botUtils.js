@@ -46,47 +46,6 @@ exports.onMessageDeleted = function (message) {
     })
 };
 
-exports.getUserMessages = function (user, guild, searchCount, isLimit, isGlobal) {
-
-    return new Promise((resolve, reject) => {
-
-        let url = `${index.config.host}/api/read?authorid=${user.id}`;
-        if (!isGlobal) url += `&serverid=${guild.id}`;
-
-        requestify.get(url).then(res => {
-
-            try {
-                let body = JSON.parse(res.body);
-
-                let results = [];
-                for (let x = 0; x < rows.length; x++) {
-                    let message = {
-                        serverID: guildId,
-                        channelID: rows[x].ChannelID,
-                        channelName: rows[x].ChannelName.capitalizeFirstLetter().replaceAll('_', ' '),
-                        authorName: rows[x].AuthorName,
-                        authorID: rows[x].AuthorID,
-                        message: rows[x].Message,
-                        date: rows[x].Date.toJSON().slice(0, 10).replaceAll('-', ' ')
-                    };
-
-                    results.push(message);
-                }
-
-                resolve(results);
-
-            } catch (err) {
-                console.error(`Error trying to parse responded body, Error: ${err.stack}`);
-            }
-        }).catch(err => {
-            console.error(`An error occurred while fetching messages, Error: ${err.stack}`);
-            reject(err);
-        })
-
-    })
-
-};
-
 exports.cleanMessage = function (message) {
 
     let cleanMsg = message.content;
@@ -177,7 +136,7 @@ exports.getBotGuilds = function () {
 
 exports.getGuildMemberCount = function (guildId) {
     let guild = exports.getGuildFromId(guildId);
-    if (guild) return guildId.memberCount;
+    if (guild) return guild.memberCount;
     else return 0;
 };
 

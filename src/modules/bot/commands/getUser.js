@@ -48,22 +48,4 @@ exports.run = function (bot, msg, args) {
 
 function runSearch(msg, searchCount, global) {
 
-    let isLimit = true;
-    if (index.config.maintainer_id.indexOf(msg.author.id) > -1) isLimit = false;
-
-    // Mentions
-    msg.mentions.users.array().forEach(user => {
-
-        utils.getUserMessages(user, msg.guild, searchCount, isLimit, global).then(messages => {
-            utils.uploadToHaste(messages).then(key => {
-
-                let embed = utils.getSimpleEmbed(`Messages: ${user.username}`, `Click [HERE](https://hastebin.com/${key}) to view the messages!`);
-                msg.channel.sendEmbed(embed);
-
-            }).catch(err => {
-                console.error(`Error uploading to haste, Error: ${err.stack}`)
-            })
-        })
-
-    })
 }
