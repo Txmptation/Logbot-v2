@@ -4,6 +4,7 @@ const http = require('http');
 const favicon = require('serve-favicon');
 const express = require('express');
 const session = require('express-session');
+const cookieSession = require('cookie-session');
 const minify = require('express-minify');
 const passport = require('passport');
 const DiscordS = require('passport-discord').Strategy;
@@ -39,11 +40,16 @@ try {
     app.set('view engine', 'ejs');
     app.use(minify());
     app.use('/', express.static(`${__dirname}/static`));
-    app.use(session({
+    app.use(cookieSession({
+        name: 'loginSession',
+        keys: [config.clientID, config.session_secret],
+        maxAge: 48 * 60 * 60 * 1000 // 48 hours
+    }));
+    /*app.use(session({
         secret: config.session_secret,
         resave: true,
         saveUninitialized: false
-    }));
+     }));*/
 
     utils.createConfigTable();
 
