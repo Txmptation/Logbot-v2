@@ -2,7 +2,7 @@
 *.log
 node_modules/
 .idea/
-
+/config.json
 src/config.json
 selfbot.sqlite
 /config.json
