@@ -24,7 +24,12 @@ function createGuild(guildId, guildName, guildMembers, region, profilePic) {
     let profileSpan = document.createElement('span');
     profileSpan.setAttribute('class', 'icon is-medium');
     let picture = document.createElement('img');
-    picture.setAttribute('src', `https://cdn.discordapp.com/icons/${guildId}/${profilePic}.jpg`);
+
+    if (profilePic) {
+        picture.setAttribute('src', `https://cdn.discordapp.com/icons/${guildId}/${profilePic}.jpg`);
+    } else {
+        picture.setAttribute('src', `/img/nothing.png`);
+    }
     picture.setAttribute('style', 'border-radius: 100%;');
 
     profileSpan.appendChild(picture);
