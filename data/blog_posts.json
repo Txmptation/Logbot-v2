@@ -6,5 +6,13 @@
     "tag_text": "Update",
     "post_date": "07/04/2017",
     "post_content": "Started working on an automatically updating blog page for all instances"
+  },
+  {
+    "post_title": "Open source!",
+    "author_url": "https://www.shaunoneill.com/assets/logo.png",
+    "author_username": "XeliteXirish",
+    "tag_text": "Source Update",
+    "post_date": "05/05/2017",
+    "post_content": "We're now publicly open source on my Github! Check it out for development builds!"
   }
 ]
