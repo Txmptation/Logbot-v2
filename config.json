@@ -1,6 +1,7 @@
 {
   "server_ip": "",
   "server_port": "",
+  "version": 0.1,
   "host": "",
   "botToken": "",
   "userbot_token": "",
