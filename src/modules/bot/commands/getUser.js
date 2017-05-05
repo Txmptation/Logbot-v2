@@ -10,7 +10,6 @@ exports.info = {
 exports.run = function (bot, msg, args) {
 
     if (args.length > 1) {
-
         if (args[0].toLowerCase() === 'user') {
             if (msg.mentions.users.size > 0) {
                 msg.mentions.users.array().forEach(user => {
@@ -22,14 +21,14 @@ exports.run = function (bot, msg, args) {
                 let userId = args[1];
                 let user = msg.guild.members.get(userId);
                 if (!user) {
-                    // Not valid user
+                    sendInvalid(msg, 'The user you specified was invalid!');
                     return;
                 }
 
                 runUserSearch(msg, user);
             }
-        } else if (args[0].toLowerCase() === 'channel') {
 
+        } else if (args[0].toLowerCase() === 'channel') {
             if (msg.mentions.channels.size > 0) {
                 msg.mentions.channels.array().forEach(channel => {
                     runChannelSearch(msg, channel);
@@ -38,7 +37,7 @@ exports.run = function (bot, msg, args) {
                 let channelId = args[1];
                 let channel = msg.guild.channels.get(channelId);
                 if (!channel) {
-                    // Invalid channel
+                    sendInvalid(msg, 'The channel you specified was invalid!');
                     return;
                 }
 
@@ -46,11 +45,11 @@ exports.run = function (bot, msg, args) {
             }
 
         } else {
-            // Wrong args
+            sendInvalid(msg, 'You must specify if you are searching for a channel or user!');
         }
 
     } else {
-        // Missing args
+        sendInvalid(msg, "You're missing arguments!");
     }
 };
 
@@ -58,7 +57,8 @@ function runUserSearch(msg, searchUser) {
     let guild = msg.guild;
 
     let embed = utils.getSimpleEmbed('Search Results', `Here are the log results for ${searchUser.tag}`, utils.getRandomColor());
-    embed.addField('Results', `[HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&authorId=${searchUser.id})`, true);
+    embed.addField('\u200b', '\u200b', true);
+    embed.addField('Results', `[CLICK HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&authorId=${searchUser.id})`, true);
 
     msg.channel.send({embed})
 }
@@ -67,7 +67,14 @@ function runChannelSearch(msg, channel) {
     let guild = msg.guild;
 
     let embed = utils.getSimpleEmbed('Search Results', `Here are the log results for ${channel.name}`, utils.getRandomColor());
-    embed.addField('Results', `[HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&channelid=${channel.id})`, true);
+    embed.addField('\u200b', '\u200b', true);
+    embed.addField('Results', `[CLICK HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&channelid=${channel.id})`, true);
 
     msg.channel.send({embed})
+}
+
+function sendInvalid(msg, text) {
+
+    let embed = utils.getSimpleEmbed('Invalid Parameters!', text, utils.getColour('red'), true);
+    msg.channel.send({embed});
 }
