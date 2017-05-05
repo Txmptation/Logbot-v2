@@ -24,7 +24,7 @@ client.on('message', msg => {
 
     botUtils.logMessage(msg);
 
-    if (commands[command]){
+    if (msg.content.startsWith(config.prefix) && commands[command]) {
         try {
             commands[command].run(client, msg, args);
         }catch (err){
