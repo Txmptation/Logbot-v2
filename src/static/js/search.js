@@ -19,6 +19,7 @@ function checkSearchingGuilds() {
 
 function getRedirectUrl() {
     let username = document.getElementById('search_username').value;
+    let message = document.getElementById('search_message').value;
     let authorId = document.getElementById('search_author_id').value;
     let channelId = document.getElementById('search_channel_id').value;
     let messageId = document.getElementById('search_message_id').value;
@@ -30,6 +31,7 @@ function getRedirectUrl() {
     url += `displayDeleted=${displayDeleted}`;
     if (searchingGuilds.length > 0) url += `&searchGuilds=${searchingGuilds}`;
     if (username) url += `&username=${username}`;
+    if (message) url += `&message=${message}`;
     if (authorId) url += `&authorId=${authorId}`;
     if (channelId) url += `&channelId=${channelId}`;
     if (messageId) url += `&messageId=${messageId}`;
