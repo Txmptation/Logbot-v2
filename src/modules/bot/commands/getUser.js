@@ -2,50 +2,72 @@ const index = require('./../../../index');
 const utils = require('../botUtils');
 
 exports.info = {
-    name: 'user',
-    usage: 'user [member | userid] [no. messages] [global]',
-    description: 'Retrieves an amount of messages for that user! [Global is for all guilds]'
+    name: 'search',
+    usage: 'user [member | user ID] | channel [channel | channel ID]',
+    description: 'Retrieves an amount of messages for that user / channel!'
 };
 
 exports.run = function (bot, msg, args) {
 
-    console.log('User command, Args : ' + args);
+    if (args.length > 1) {
 
-    if (args.length === 3) {
+        if (args[0].toLowerCase() === 'user') {
+            if (msg.mentions.users.size > 0) {
+                msg.mentions.users.array().forEach(user => {
+                    runUserSearch(msg, user);
+                })
 
-        let isGlobalSearch = false;
-        if (typeof args[args.length - 1] === 'boolean') {
-            if (args[args.length - 1] == 'true') {
-                isGlobalSearch = true;
+            } else {
+
+                let userId = args[1];
+                let user = msg.guild.members.get(userId);
+                if (!user) {
+                    // Not valid user
+                    return;
+                }
+
+                runUserSearch(msg, user);
             }
+        } else if (args[0].toLowerCase() === 'channel') {
+
+            if (msg.mentions.channels.size > 0) {
+                msg.mentions.channels.array().forEach(channel => {
+                    runChannelSearch(msg, channel);
+                })
+            } else {
+                let channelId = args[1];
+                let channel = msg.guild.channels.get(channelId);
+                if (!channel) {
+                    // Invalid channel
+                    return;
+                }
+
+                runChannelSearch(msg, channel);
+            }
+
+        } else {
+            // Wrong args
         }
-
-        let searchMessages = index.config.default_message_search;
-        if (typeof args[args.length - 2] == 'number') {
-            searchMessages = args[args.length - 2];
-        }
-
-        runSearch(msg, searchMessages, isGlobalSearch);
-
-    } else if (args.length == 2) {
-
-        let searchMessages = index.config.default_message_search;
-        if (typeof args[args.length - 1] == 'number') {
-            searchMessages = args[args.length - 1];
-        }
-
-        runSearch(msg, searchMessages, false);
-
-    } else if (args.length == 1) {
-
-        let searchMessages = index.config.default_message_search;
-        runSearch(msg, searchMessages, false);
 
     } else {
-        msg.channel.sendEmbed(utils.getSimpleEmbed("Missing Parameters!", 'You need to at least include a user to search for!', utils.getColour('red'), true)).then(m => {m.delete(index.config.msg_delete_time)})
+        // Missing args
     }
 };
 
-function runSearch(msg, searchCount, global) {
+function runUserSearch(msg, searchUser) {
+    let guild = msg.guild;
 
+    let embed = utils.getSimpleEmbed('Search Results', `Here are the log results for ${searchUser.tag}`, utils.getRandomColor());
+    embed.addField('Results', `[HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&authorId=${searchUser.id})`, true);
+
+    msg.channel.send({embed})
+}
+
+function runChannelSearch(msg, channel) {
+    let guild = msg.guild;
+
+    let embed = utils.getSimpleEmbed('Search Results', `Here are the log results for ${channel.name}`, utils.getRandomColor());
+    embed.addField('Results', `[HERE](${index.config.host}/search/results?displayDeleted=true&searchGuilds=${guild.id}&channelid=${channel.id})`, true);
+
+    msg.channel.send({embed})
 }

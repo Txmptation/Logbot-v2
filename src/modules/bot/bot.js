@@ -18,13 +18,10 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    let command = msg.content.split(' ')[0].substr(index.config.prefix.length);
-    const args = msg.content.split(' ').splice(1);
+    const args = msg.content.split(' ').splice(2);
+    let command = msg.content.split(' ')[1];
 
     botUtils.logMessage(msg);
-
-    if (msg.author.id !== client.user.id) return;
-
     if (commands[command]){
         try {
             commands[command].run(client, msg, args);
