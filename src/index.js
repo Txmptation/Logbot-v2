@@ -4,6 +4,7 @@ const http = require('http');
 const favicon = require('serve-favicon');
 const express = require('express');
 const session = require('express-session');
+const minify = require('express-minify');
 const passport = require('passport');
 const DiscordS = require('passport-discord').Strategy;
 const bodyParser = require('body-parser');
@@ -36,6 +37,7 @@ try {
     app.use(express.static('Web'));
     app.set('views', `${__dirname}/views`);
     app.set('view engine', 'ejs');
+    app.use(minify());
     app.use('/', express.static(`${__dirname}/static`));
     app.use(session({
         secret: config.session_secret,
