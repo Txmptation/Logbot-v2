@@ -311,6 +311,34 @@ exports.getGuildDeletedMsgsPerm = function (guild) {
     })
 };
 
+exports.getGeneralRoleId = function (guildId) {
+
+    return new Promise((resolve, reject) => {
+        let query = `SELECT GeneralRoleId FROM Configs WHERE ServerId=${guildId}`;
+        index.db.query(query, function (err, rows, fields) {
+            if (err){
+                console.error(`An error occurred trying to fetch general role Id, Error: ${err.stack}`);
+                reject(err);
+                return;
+            }
+
+            let guild = botUtils.getGuildFromId(guildId);
+            if (!guild){
+                console.error(`Invalid guild, Id: ${guildId}`);
+                return;
+            }
+
+            if (rows.length === 0){
+                exports.addConfigEntry(guild);
+                resolve(guild.defaultRole.id);
+            }else {
+                let roleId = rows[0].GeneralRoleId;
+                resolve(roleId);
+            }
+        })
+    });
+};
+
 exports.checkUserChannelPerm = function (channel, userId) {
     try {
 

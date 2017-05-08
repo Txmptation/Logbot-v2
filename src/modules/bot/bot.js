@@ -8,6 +8,8 @@ const botUtils = require('./botUtils');
 const config = exports.config = client.config = index.config;
 const commands = exports.commands = client.commands = {};
 
+const deletedMsgHandler = require('./handler/deletedMsgHandler');
+
 client.on('ready', () => {
 
     console.log(`Logbot v2: Connected to ${client.guilds.size} servers, for a total of ${client.channels.size} channels and ${client.users.size} users!`);
@@ -35,6 +37,8 @@ client.on('message', msg => {
 
 client.on('messageDelete', msg => {
     botUtils.onMessageDeleted(msg);
+
+    deletedMsgHandler.onMsgDeleted(msg);
 });
 
 client.on('guildCreate', guild => {
